@@ -2,10 +2,9 @@ package database;
 
 public class Const {
     public static String API_KEY = "tHhcvtGjlPCJsOE1HBmjKwL7u1j5wV1V";
-    public static String Map_Web = "https://www.mapquestapi.com/directions/v2/route";
-//    public static Serializable<Car> serializableCar = new Serializable<>();
-//    public static Serializable<Client> serializableClient = new Serializable<>();
-//    public static Serializable<Driver> serializableDriver = new Serializable<>();
-//    public static Serializable<Manager> serializableManager = new Serializable<>();
+    public static String MAP_GET_DISTANCE = "https://www.mapquestapi.com/directions/v2/route";
+    public static String MAP_GET_LOCATION = "https://www.mapquestapi.com/geocoding/v1/reverse?key=";
+    public static String EMAIL = "codegym.taxi@gmail.com";
+    public static String PASSWORD = "Tuan789@";
 
 }

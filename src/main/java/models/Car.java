@@ -1,14 +1,17 @@
 package models;
 
+import database.Enum.ECarType;
+
+import java.io.Serializable;
 import java.sql.Date;
 
 
-public class Car  {
+public class Car implements Serializable {
     static int currentId = 0;
     private int id;
     private String model;
     private String licensePlate;
-    private int seats;
+    private ECarType carType;
     private int price;
     private int waitPrice;
     private Date registrationExpiryDate;
@@ -20,39 +23,24 @@ public class Car  {
 
     }
 
-    public Car(String model, String licensePlate, int seats, int price, int waitPrice, String registrationExpiryDate, String insuranceExpiryDate, Driver driver, String status) {
+    public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate, Driver driver, String status) {
         this.id = ++currentId;
         this.model = model;
         this.licensePlate = licensePlate;
-        this.seats = seats;
-        this.price = price;
-        this.waitPrice = waitPrice;
-        this.insuranceExpiryDate = Date.valueOf(insuranceExpiryDate);
-        this.registrationExpiryDate = Date.valueOf(registrationExpiryDate);
+        this.carType = carType;
+        this.insuranceExpiryDate = insuranceExpiryDate;
+        this.registrationExpiryDate = registrationExpiryDate;
         this.driver = driver;
         this.status = status;
     }
 
-    public Car(String model, String licensePlate, int seats, int price, int waitPrice, String registrationExpiryDate, String insuranceExpiryDate) {
+    public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate) {
         this.id = ++currentId;
         this.model = model;
         this.licensePlate = licensePlate;
-        this.seats = seats;
-        this.price = price;
-        this.waitPrice = waitPrice;
-        this.insuranceExpiryDate = Date.valueOf(insuranceExpiryDate);
-        this.registrationExpiryDate = Date.valueOf(registrationExpiryDate);
-    }
-
-    public Car(int id, String model, String licensePlate, int seats, int price, int waitPrice, String registrationExpiryDate, String insuranceExpiryDate) {
-        this.id = id;
-        this.model = model;
-        this.licensePlate = licensePlate;
-        this.seats = seats;
-        this.price = price;
-        this.waitPrice = waitPrice;
-        this.insuranceExpiryDate = Date.valueOf(insuranceExpiryDate);
-        this.registrationExpiryDate = Date.valueOf(registrationExpiryDate);
+        this.carType = carType;
+        this.insuranceExpiryDate = insuranceExpiryDate;
+        this.registrationExpiryDate = registrationExpiryDate;
     }
 
     public static int getCurrentId() {
@@ -63,48 +51,17 @@ public class Car  {
         Car.currentId = currentId;
     }
 
-    public int getPrice() {
-        return price;
-    }
-
-    public void setPrice(int price) {
-        this.price = price;
-    }
-
-    public int getWaitPrice() {
-        return waitPrice;
-    }
-
-    public void setWaitPrice(int waitPrice) {
-        this.waitPrice = waitPrice;
-    }
-
-//    @Override
-//    public String serializeData() {
-//        return id + "," +
-//                model + "," +
-//                licensePlate + "," +
-//                seats + "," +
-//                price + "," +
-//                waitPrice + "," +
-//                registrationExpiryDate + "," +
-//                insuranceExpiryDate + "," +
-//                driver.getId() + "," +
-//                driver.getName() + "," +
-//                status;
-//
-//    }
-
-
     @Override
     public String toString() {
         return
                 "id=" + id +
                         ", model='" + model + '\'' +
                         ", licensePlate='" + licensePlate + '\'' +
-                        ", seats=" + seats +
-                        ", price=" + price +
-                        ", waitPrice=" + waitPrice +
+                        ", seats=" + carType.getSeat() + '\'' +
+                        ", openPrice=" + carType.getOpenPrice() + '\'' +
+                        ", priceUnder30 =" + carType.getPriceUnder30() + '\'' +
+                        ", priceUpper30 =" + carType.getPriceUpper30() + '\'' +
+                        ", waitPrice=" + carType.getWaitPrice() + '\'' +
                         ", registrationExpiryDate='" + registrationExpiryDate + '\'' +
                         ", insuranceExpiryDate='" + insuranceExpiryDate + '\''
                         +
@@ -154,13 +111,10 @@ public class Car  {
         this.licensePlate = licensePlate;
     }
 
-    public int getSeats() {
-        return seats;
+    public ECarType getCarType() {
+        return carType;
     }
 
-    public void setSeats(int seats) {
-        this.seats = seats;
-    }
 
     public void setDriver(Driver driver) {
         this.driver = driver;

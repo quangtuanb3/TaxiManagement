@@ -1,7 +1,6 @@
 package services;
 
-import database.Path;
-import models.Car;
+import database.Enum.EPath;
 import models.Driver;
 import utils.Serializable;
 
@@ -13,6 +12,7 @@ import java.util.stream.Collectors;
 
 public class DriverService implements BasicCRUD<Driver> {
     public static List<Driver> listDrivers;
+    public static Driver currentDriver;
     public DriverService() {
     }
 
@@ -48,8 +48,14 @@ public class DriverService implements BasicCRUD<Driver> {
             }
         }
     }
-    public static void saveDrives() throws IOException {
-        Serializable.serialize(listDrivers, Path.DRIVERS.getFilePath());
+    public static void saveDrives() {
+        Serializable.serialize(listDrivers, EPath.DRIVERS.getFilePath());
+    }
+    public static Driver getByEmail(String email) {
+        return listDrivers.stream()
+                .filter(e -> e.getEmail().equals(email))
+                .findFirst()
+                .orElse(null);
     }
     @Override
     public boolean isExist(int driverId) {
@@ -67,16 +73,12 @@ public class DriverService implements BasicCRUD<Driver> {
                 .collect(Collectors.toList());
     }
 
-    @Override
+
     public void print() {
         for (Driver driver : listDrivers) {
             System.out.println(driver.toString());
         }
     }
 
-    public void assignCarToDriver(Driver driver, Car car) {
-        driver.setCar(car);
-        update(driver);
-    }
 
 }

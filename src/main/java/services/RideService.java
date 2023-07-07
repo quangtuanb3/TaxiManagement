@@ -1,18 +1,23 @@
 package services;
 
-import models.*;
+import database.Enum.ECarType;
+import database.Enum.EDriverStatus;
+import database.Enum.ERideStatus;
+import models.Driver;
+import models.Location;
+import models.Ride;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
 
-import static models.CurrentUser.currentUser;
 
 public class RideService implements BasicCRUD<Ride> {
-    static List<Ride> listRides = new ArrayList<>();
-
-    private FareCalculator fareCalculator;
+    public static List<Ride> listRides;
+    static List<Driver> availableDriver = DriverService.listDrivers.stream().filter(Driver::isAvailable).collect(Collectors.toList());
+    public static List<Ride> waitingRides;
+    public static Ride currentRide;
+    private FareCalculator fareCalculator = new FareCalculator();
 
     public RideService() {
     }
@@ -27,11 +32,12 @@ public class RideService implements BasicCRUD<Ride> {
         listRides.add(ride);
     }
 
-    public Ride bookRide(Location pickupLocation, Location expectedDestination) {
-        double fare = fareCalculator.calculateFare(pickupLocation, expectedDestination);
-        Client client = ClientService.getByUsername(currentUser);
-        Ride ride = new Ride(client, pickupLocation, expectedDestination, fare);
-        CurrentUser.currentRide = ride;
+    public Ride bookRide(Location pickupLocation, Location expectedDestination, ECarType eCarType) {
+        double fare = fareCalculator.calculateFare(pickupLocation, expectedDestination, eCarType);
+        Ride ride = new Ride(ClientService.currentClient, pickupLocation, expectedDestination, fare);
+        currentRide = ride;
+        waitingRides.add(ride);
+        listRides.add(ride);
         return ride;
     }
 
@@ -62,18 +68,17 @@ public class RideService implements BasicCRUD<Ride> {
                 .collect(Collectors.toList());
     }
 
-    @Override
     public void print() {
         for (Ride ride : listRides) {
             System.out.println(ride.toString());
         }
     }
 
-    public static void updateRideStatus(Ride ride, RideStatus status) {
+    public static void updateRideStatus(Ride ride, ERideStatus status) {
         ride.setStatus(status);
     }
 
-    @Override
+
     public Ride getById(int id) {
         return listRides.stream()
                 .filter(e -> e.getId() == id)
@@ -82,13 +87,43 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public void cancelRide(int rideId) {
-        getById(rideId).setStatus(RideStatus.CANCELLED);
-        updateRideStatus(getById(rideId), RideStatus.CANCELLED);
+        getById(rideId).setStatus(ERideStatus.CANCELLED);
+        updateRideStatus(getById(rideId), ERideStatus.CANCELLED);
     }
 
     public void getRideDetail() {
-        System.out.println(CurrentUser.currentRide.toString());
+        System.out.println(currentRide.toString());
     }
 
+    public void approve(int rideId) {
+        Ride ride = getById(rideId);
+        if (DriverService.currentDriver.isAvailable()) {
+            assignRideToDriver(ride, DriverService.currentDriver);
+            waitingRides = waitingRides.stream().filter(e -> e.getId()!=rideId).collect(Collectors.toList());
+        } else {
+            DriverService.currentDriver.setDriverStatus(EDriverStatus.UNAVAILABLE);
+        }
+    }
+
+    public void assignRideToDriver(Ride ride, Driver driver) {
+        driver.setCurrentRide(ride);
+        driver.setDriverStatus(EDriverStatus.ON_TRIP);
+        ride.setStatus(ERideStatus.CONFIRMED);
+        ride.setDriver(driver);
+    }
+
+    public static void printAvailableRides() {
+        System.out.println("ID\tName\tPickup\t\tDestination\tFare");
+        System.out.println("-----------------------------------------------");
+
+        for (Ride ride : waitingRides) {
+            System.out.printf("%s\t%s\t%s\t%s\t%.2f%n",
+                    ride.getId(),
+                    ride.getClient().getName(),
+                    ride.getPickupLocation().getAddress(),
+                    ride.getExpectedDestination().getAddress(),
+                    ride.getFare());
+        }
+    }
 
 }

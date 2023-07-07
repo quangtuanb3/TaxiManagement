@@ -1,6 +1,8 @@
 package models;
 
-public class Manager extends Person {
+import java.io.Serializable;
+
+public class Manager extends Person implements Serializable {
     static final int auth = 3;
 
     public Manager() {

@@ -16,7 +16,4 @@ public interface BasicCRUD<T> {
 
     boolean isExist(int id);
 
-    void print();
-
-
 }

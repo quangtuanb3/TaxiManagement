@@ -1,6 +1,6 @@
 package services;
 
-import database.Path;
+import database.Enum.EPath;
 import models.Car;
 import models.Driver;
 import utils.Serializable;
@@ -38,7 +38,7 @@ public class CarService implements BasicCRUD<Car> {
     @Override
     public void create(Car car) throws IOException {
         listCars.add(car);
-        saveCars();
+        save();
     }
 
     @Override
@@ -52,8 +52,8 @@ public class CarService implements BasicCRUD<Car> {
         }
     }
 
-    public static void saveCars() throws IOException {
-        Serializable.serialize(listCars, Path.CARS.getFilePath());
+    public static void save() {
+        Serializable.serialize(listCars, EPath.CARS.getFilePath());
     }
 
     @Override
@@ -70,10 +70,9 @@ public class CarService implements BasicCRUD<Car> {
         listCars = listCars.stream()
                 .filter(e -> !Objects.equals(e.getId(), carId))
                 .collect(Collectors.toList());
-        saveCars();
+        save();
     }
 
-    @Override
     public void print() {
         for (Car car : listCars) {
             System.out.println(car.toString());

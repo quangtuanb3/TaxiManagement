@@ -1,62 +1,52 @@
 package models;
 
+import database.Enum.EAuth;
+import database.Enum.EDriverStatus;
+
+import java.io.Serializable;
 import java.util.List;
 
 
-public class Driver extends Person {
+public class Driver extends Person implements Serializable {
     private List<Ride> listRides;
+    private Ride currentRide;
     private Car car;
-    private boolean available;
+    private EDriverStatus driverStatus = EDriverStatus.AVAILABLE;
     private int salary;
+    private Location location;
     private String accountStatus = "inactive";
-    static final int auth = 2;
 
+    static final EAuth auth = EAuth.DRIVER;
 
+    public Driver() {
+    }
 
-    public Driver(String name, String email, String password, String phoneNumber, Car car, boolean available, int salary, String status, List<Ride> listRides) {
+    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, String status, List<Ride> listRides) {
         super(name, email, password, phoneNumber);
         this.car = car;
-        this.available = available;
         this.salary = salary;
         this.accountStatus = status;
         this.listRides = listRides;
     }
 
-    public Driver() {
-    }
-
-    public Driver(String name, String email, String password, String phoneNumber, String status) {
+    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, EDriverStatus driverStatus, String accountStatus) {
         super(name, email, password, phoneNumber);
-    }
-
-    public Driver(String name, String email, String password, String phoneNumber) {
-        setName(name);
-        setEmail(email);
-        setPassword(password);
-        setPhoneNumber(phoneNumber);
-        setAccountStatus("active");
-    }
-
-    public Driver(List<Ride> listRides, Car car, boolean available, int salary, String accountStatus) {
-        this.listRides = listRides;
         this.car = car;
-        this.available = available;
         this.salary = salary;
+        this.driverStatus = driverStatus;
         this.accountStatus = accountStatus;
     }
 
-    public Driver(String name, String email, String password, String phoneNumber, List<Ride> listRides, Car car, boolean available, int salary, String accountStatus) {
+    public Driver(String name, String email, String password, String phoneNumber, String accountStatus) {
         super(name, email, password, phoneNumber);
-        this.listRides = listRides;
-        this.car = car;
-        this.available = available;
-        this.salary = salary;
         this.accountStatus = accountStatus;
     }
+
 
     public List<Ride> getListRides() {
         return listRides;
     }
+
     public int getSalary() {
         return salary;
     }
@@ -75,12 +65,35 @@ public class Driver extends Person {
     }
 
     public boolean isAvailable() {
-        return available;
+        return this.driverStatus.equals(EDriverStatus.AVAILABLE);
     }
 
+    public void setCurrentRide(Ride currentRide) {
+        this.currentRide = currentRide;
+    }
 
-    public void setAvailable(boolean available) {
-        this.available = available;
+    public void setListRides(List<Ride> listRides) {
+        this.listRides = listRides;
+    }
+
+    public Ride getCurrentRide() {
+        return currentRide;
+    }
+
+    public EDriverStatus getDriverStatus() {
+        return driverStatus;
+    }
+
+    public Location getLocation() {
+        return location;
+    }
+
+    public void setLocation(Location location) {
+        this.location = location;
+    }
+
+    public void setDriverStatus(EDriverStatus status) {
+        this.driverStatus = status;
     }
 
     public String getAccountStatus() {
@@ -92,14 +105,13 @@ public class Driver extends Person {
     }
 
 
-
     @Override
     public String toString() {
         return "id: " + getId() +
                 ", Name: " + getName() +
                 ", Email: " + getEmail() +
                 ", Car: " + car.getId() +
-                ", " + (available ? " Available" : " Unavailable") +
+                ", " + getAccountStatus() +
                 ", salary: " + salary +
                 ", accountStatus: " + accountStatus + '\n';
     }

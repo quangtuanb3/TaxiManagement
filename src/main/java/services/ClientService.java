@@ -1,6 +1,8 @@
 package services;
 
+import database.Enum.EPath;
 import models.Client;
+import utils.Serializable;
 
 import java.util.List;
 import java.util.Objects;
@@ -8,6 +10,7 @@ import java.util.stream.Collectors;
 
 public class ClientService implements BasicCRUD<Client> {
     public static List<Client> listClients;
+    public static Client currentClient;
 
     public ClientService() {
     }
@@ -23,9 +26,9 @@ public class ClientService implements BasicCRUD<Client> {
         return foundClient;
     }
 
-    public static Client getByUsername(String username) {
+    public static Client getByEmail(String email) {
         return listClients.stream()
-                .filter(e -> e.getName().equals(username))
+                .filter(e -> e.getEmail().equals(email))
                 .findFirst()
                 .orElse(null);
     }
@@ -67,10 +70,14 @@ public class ClientService implements BasicCRUD<Client> {
                 .collect(Collectors.toList());
     }
 
-    @Override
+
     public void print() {
         for (Client client : listClients) {
             System.out.println(client.toString());
         }
     }
+    public static void save() {
+        Serializable.serialize(listClients, EPath.CLIENTS.getFilePath());
+    }
+
 }

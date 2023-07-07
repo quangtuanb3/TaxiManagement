@@ -1,23 +1,28 @@
 package services;
 
+import database.Enum.ECarType;
 import models.Location;
 import models.Ride;
 import utils.DistanceCalculator;
 
-import java.sql.Time;
-
 public class FareCalculator {
     Ride ride;
-    private static final double BASE_FARE = 5.0;
-    private static final double PER_KM_FARE = 2.0;
-    private static final double WAIT_FEE = 1.5;
-    public double calculateFare(Location pickupLocation, Location destination) {
-        double distance = DistanceCalculator.getDistance(pickupLocation.toString(), destination.toString());
-        return BASE_FARE + (distance * PER_KM_FARE);
+
+    public double calculateFare(Location pickupLocation, Location destination, ECarType eCarType) {
+        double distance = DistanceCalculator.calculateDistance(pickupLocation.getAddress(), destination.getAddress());
+        if (distance <= 30) {
+            return distance * eCarType.getPriceUnder30() + eCarType.getOpenPrice();
+        } else {
+            return (distance - 30) * eCarType.getPriceUpper30() + 30 * eCarType.getPriceUnder30() + eCarType.getOpenPrice();
+        }
     }
-    public double calculateFare(Location pickupLocation, Location destination, Time wait) {
-        double distance = DistanceCalculator.getDistance(pickupLocation.toString(), destination.toString());
-        return BASE_FARE + (distance * PER_KM_FARE);
+
+    public double calculateFare(Location pickupLocation, Location destination, ECarType eCarType, int waitTime) {
+        double distance = DistanceCalculator.calculateDistance(pickupLocation.getAddress(), destination.getAddress());
+        if (distance <= 30) {
+            return distance * eCarType.getPriceUnder30() + eCarType.getOpenPrice() + waitTime * eCarType.getWaitPrice();
+        } else {
+            return (distance - 30) * eCarType.getPriceUpper30() + 30 * eCarType.getPriceUnder30() + eCarType.getOpenPrice() + waitTime * eCarType.getWaitPrice();
+        }
     }
-    Time time = new Time(10);
 }

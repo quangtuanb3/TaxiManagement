@@ -1,14 +1,16 @@
 package models;
 
-import java.util.ArrayList;
+import database.Enum.EAuth;
+
+import java.io.Serializable;
 import java.util.List;
 
-public class Client extends Person {
+public class Client extends Person implements Serializable {
     static int currentId = 0;
     private int id;
     private Ride currentRide;
-    private List<Ride> listRides = new ArrayList<>();
-    static final int auth = 1;
+    private List<Ride> listRides;
+    static final String auth = EAuth.CLIENT.getAuth();
 
     public Client(String name, String email, String password, String phoneNumber) {
         super(name, email, password, phoneNumber);
@@ -38,12 +40,4 @@ public class Client extends Person {
         this.currentRide = currentRide;
         this.listRides = listRides;
     }
-
-//    public String serializeData() {
-//        return id + "," +
-//                getName() + "," +
-//                getEmail() + "," +
-//                getPassword() + "," +
-//                getPhoneNumber();
-//    }
 }
