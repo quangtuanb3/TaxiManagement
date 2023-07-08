@@ -16,6 +16,7 @@ public class RegisterService {
         Client client = new Client(name, email, password, phoneNumber);
         ClientService.listClients.add(client);
         ClientService.save();
+        System.out.println("Register successful!");
         loginMenu();
     }
 }

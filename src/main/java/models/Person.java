@@ -1,7 +1,7 @@
 package models;
 
 public abstract class Person {
-    public static int currentId;
+
     private int id;
     private String name;
     private String email;
@@ -13,7 +13,6 @@ public abstract class Person {
     }
 
     public Person( String name, String email, String password, String phoneNumber) {
-        this.id = ++currentId;
         this.name = name;
         this.email = email;
         this.password = password;
@@ -60,4 +59,6 @@ public abstract class Person {
     public void setPhoneNumber(String phoneNumber) {
         this.phoneNumber = phoneNumber;
     }
+
+
 }

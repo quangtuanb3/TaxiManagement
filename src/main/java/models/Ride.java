@@ -2,11 +2,12 @@ package models;
 
 import database.Enum.ERideStatus;
 
-import java.sql.Date;
-import java.sql.Time;
+import java.io.Serializable;
+import java.time.LocalDateTime;
 
-public class Ride {
-    static int currentId;
+import static services.RideService.listRides;
+
+public class Ride implements Serializable {
     private int id;
     private Client client;
     private Driver driver;
@@ -14,15 +15,16 @@ public class Ride {
     private Location actualDestination;
     private Location expectedDestination;
     private Location driverLocation;
-
-    private double fare;
+    private Double fare;
     private ERideStatus status;
-    private Date startTime;
-    private Date endTime;
-    private Time waitTime;
+    private LocalDateTime expectedPickupTime;
+    private LocalDateTime startTime;
+    private LocalDateTime confirmedTime;
+    private LocalDateTime endTime;
+    private int waitTime;
 
 
-    public Ride(int id, Client client, Driver driver, Location pickupLocation, Location actualDestination, Location expectedDestination, Location driverLocation, double fare, ERideStatus status, Date startTime, Date endTime, Time wait) {
+    public Ride(int id, Client client, Driver driver, Location pickupLocation, Location actualDestination, Location expectedDestination, Location driverLocation, Double fare, ERideStatus status, LocalDateTime expectedPickupTime, LocalDateTime startTime, LocalDateTime confirmedTime, LocalDateTime endTime, int waitTime) {
         this.id = id;
         this.client = client;
         this.driver = driver;
@@ -32,21 +34,36 @@ public class Ride {
         this.driverLocation = driverLocation;
         this.fare = fare;
         this.status = status;
+        this.expectedPickupTime = expectedPickupTime;
         this.startTime = startTime;
+        this.confirmedTime = confirmedTime;
         this.endTime = endTime;
-        this.waitTime = wait;
+        this.waitTime = waitTime;
     }
 
     public Ride() {
     }
 
+    public Driver getDriver() {
+        return driver;
+    }
 
-    public Ride(Client client, Location pickupLocation, Location expectedDestination, double fare) {
+    public Location getDriverLocation() {
+        return driverLocation;
+    }
+
+    public void setDriverLocation(Location driverLocation) {
+        this.driverLocation = driverLocation;
+    }
+
+    public Ride(Client client, Location pickupLocation, Location expectedDestination, Double fare, LocalDateTime expectedPickupTime) {
+        this.id = getNextId();
         this.client = client;
         this.pickupLocation = pickupLocation;
         this.expectedDestination = expectedDestination;
         this.fare = fare;
         this.status = ERideStatus.WAITING;
+        this.startTime = expectedPickupTime;
     }
 
     // Getters and setters for the properties
@@ -73,6 +90,19 @@ public class Ride {
                 '}';
     }
 
+    public static void printRide(Ride ride) {
+        if (ride == null) {
+            System.out.println("There is no ride");
+            return;
+        }
+        System.out.printf("%s\t%s\t\t%s\t%s\t\t%.2f%n",
+                ride.getId(),
+                ride.getClient().getName(),
+                ride.getPickupLocation().getAddress(),
+                ride.getExpectedDestination().getAddress(),
+                ride.getFare());
+    }
+
     public void setId(int id) {
         this.id = id;
     }
@@ -85,6 +115,13 @@ public class Ride {
         this.client = client;
     }
 
+    public LocalDateTime getConfirmedTime() {
+        return confirmedTime;
+    }
+
+    public void setConfirmedTime(LocalDateTime confirmedTime) {
+        this.confirmedTime = confirmedTime;
+    }
 
     public Location getPickupLocation() {
         return pickupLocation;
@@ -110,15 +147,23 @@ public class Ride {
         this.expectedDestination = expectedDestination;
     }
 
-    public Time getWaitTime() {
+    public int getWaitTime() {
         return waitTime;
     }
 
-    public void setWaitTime(Time waitTime) {
+    public LocalDateTime getExpectedPickupTime() {
+        return expectedPickupTime;
+    }
+
+    public void setExpectedPickupTime(LocalDateTime expectedPickupTime) {
+        this.expectedPickupTime = expectedPickupTime;
+    }
+
+    public void setWaitTime(int waitTime) {
         this.waitTime = waitTime;
     }
 
-    public double getFare() {
+    public Double getFare() {
         return fare;
     }
 
@@ -126,7 +171,7 @@ public class Ride {
         return this.status.equals(ERideStatus.WAITING);
     }
 
-    public void setFare(double fare) {
+    public void setFare(Double fare) {
         this.fare = fare;
     }
 
@@ -138,23 +183,35 @@ public class Ride {
         this.status = status;
     }
 
-    public Date getStartTime() {
+    public LocalDateTime getStartTime() {
         return startTime;
     }
 
-    public void setStartTime(Date startTime) {
+    public void setStartTime(LocalDateTime startTime) {
         this.startTime = startTime;
     }
 
-    public Date getEndTime() {
+    public LocalDateTime getEndTime() {
         return endTime;
     }
 
-    public void setEndTime(Date endTime) {
+    public void setEndTime(LocalDateTime endTime) {
         this.endTime = endTime;
     }
 
     public void setDriver(Driver driver) {
         this.driver = driver;
+    }
+
+    public static int getNextId() {
+        int max = 0;
+        if (listRides != null) {
+            for (Ride ride : listRides) {
+                if (ride.getId() > max) {
+                    max = ride.getId();
+                }
+            }
+        }
+        return max + 1;
     }
 }

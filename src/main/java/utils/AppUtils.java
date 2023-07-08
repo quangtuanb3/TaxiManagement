@@ -1,11 +1,17 @@
 package utils;
 
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.sql.Date;
 import java.sql.Time;
 import java.text.DecimalFormat;
+import java.time.Duration;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.Scanner;
-import java.nio.file.Path;
-import java.nio.file.Paths;
+
+import static database.Const.DATE_TIME_FORMATTER;
 
 public class AppUtils {
     private static Scanner sc;
@@ -33,8 +39,6 @@ public class AppUtils {
             System.out.println("Empty data. Input again!");
             return getString(str);
         }
-
-
     }
 
     public static int getInt(String str) {
@@ -91,9 +95,35 @@ public class AppUtils {
         return path.toAbsolutePath().toString();
     }
 
-    public static void main(String[] args) {
-        String path = getDirectoryPath("src/main/java/database/managers.txt");
-        System.out.println(path);
+    public static LocalDateTime getDateTimeNow() {
+        return LocalDateTime.now();
+    }
+    public static LocalDateTime getDateTime(String str) {
+        try {
+            LocalDateTime dateTime = LocalDateTime.parse(getString(str + " (yyyy-MM-dd HH:mm:ss):"), DATE_TIME_FORMATTER);
+            LocalDateTime now = getDateTimeNow();
+            if (getDuration(now, dateTime ) < 0 || getDuration(now, dateTime) > 1440) {
+                throw new RuntimeException("Invalid Date Range. Please enter a date and time within the last 24 hours.");
+            }
+            return dateTime;
+        } catch (DateTimeParseException e) {
+            System.out.println("Invalid date format. Please enter the date and time in the format 'yyyy-MM-dd HH:mm:ss'.");
+            return getDateTime(str);
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+            return getDateTime(str);
+        }
     }
 
+    public static LocalDateTime parseDateTime(String input) {
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        return LocalDateTime.parse(input, formatter);
+    }
+
+    public static int getDuration(LocalDateTime startTime, LocalDateTime endTime) {
+        Duration duration = Duration.between( startTime, endTime);
+        return (int) duration.toMinutes();
+    }
 }
+
+

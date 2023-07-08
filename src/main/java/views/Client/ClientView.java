@@ -7,6 +7,7 @@ import services.ClientService;
 import services.RideService;
 import utils.AppUtils;
 
+import java.time.LocalDateTime;
 import java.util.Objects;
 
 import static views.LoginView.loginMenu;
@@ -108,7 +109,9 @@ public class ClientView {
     private static Ride bookRideUi() {
         String departAddress = AppUtils.getString("Input depart: ");
         String arriverAddress = AppUtils.getString("Input destination: ");
+        LocalDateTime pickupTime = AppUtils.getDateTime("Input pickup time");
         int carType = AppUtils.getIntWithBound("Input Car type (1.Four seats/2.Seven seats)", 1, 2);
-        return rideService.bookRide(new Location(departAddress), new Location(arriverAddress), carType == 1 ? ECarType.FOUR : ECarType.SEVEN);
+        return rideService.bookRide(new Location(departAddress), new Location(arriverAddress), carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime);
+
     }
 }

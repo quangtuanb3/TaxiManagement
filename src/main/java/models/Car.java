@@ -5,9 +5,10 @@ import database.Enum.ECarType;
 import java.io.Serializable;
 import java.sql.Date;
 
+import static services.CarService.listCars;
+
 
 public class Car implements Serializable {
-    static int currentId = 0;
     private int id;
     private String model;
     private String licensePlate;
@@ -24,7 +25,6 @@ public class Car implements Serializable {
     }
 
     public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate, Driver driver, String status) {
-        this.id = ++currentId;
         this.model = model;
         this.licensePlate = licensePlate;
         this.carType = carType;
@@ -32,24 +32,18 @@ public class Car implements Serializable {
         this.registrationExpiryDate = registrationExpiryDate;
         this.driver = driver;
         this.status = status;
+        this.setId(getNextId());
     }
 
     public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate) {
-        this.id = ++currentId;
         this.model = model;
         this.licensePlate = licensePlate;
         this.carType = carType;
         this.insuranceExpiryDate = insuranceExpiryDate;
         this.registrationExpiryDate = registrationExpiryDate;
+        this.setId(getNextId());
     }
 
-    public static int getCurrentId() {
-        return currentId;
-    }
-
-    public static void setCurrentId(int currentId) {
-        Car.currentId = currentId;
-    }
 
     @Override
     public String toString() {
@@ -71,9 +65,6 @@ public class Car implements Serializable {
     }
 
     // Getters and setters for the properties
-    public int getId() {
-        return id;
-    }
 
     public Date getRegistrationExpiryDate() {
         return registrationExpiryDate;
@@ -119,4 +110,30 @@ public class Car implements Serializable {
     public void setDriver(Driver driver) {
         this.driver = driver;
     }
+
+    public static int getNextId() {
+        int max = 0;
+        if (listCars != null) {
+            for (Car car : listCars) {
+                if (car.getId() > max) {
+                    max = car.getId();
+                }
+            }
+        }
+        return max + 1;
+    }
+
+    public int getId() {
+        return this.id;
+    }
+
+    public void printDetail() {
+        System.out.println("ID\tLicense Plate\tSeat\tOpen Price\tPrice Under 30\tPrice Upper 30\tInsurance Expiry\tRegistration Expiry");
+        System.out.println("-------------------------------------------------------------------------------------------------------------------");
+        System.out.printf("%s\t%s\t%d\t%d\t\t%d\t\t%d\t\t%s\t%s\n", id, licensePlate, carType.getSeat(),
+                carType.getOpenPrice(), carType.getPriceUnder30(), carType.getPriceUpper30(),
+                insuranceExpiryDate, registrationExpiryDate);
+    }
+
+
 }

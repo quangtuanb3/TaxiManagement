@@ -26,7 +26,6 @@ public class DistanceCalculator {
             HttpGet httpGet = new HttpGet(apiUrl);
             HttpClient client = HttpClients.createDefault();
             HttpResponse httpResponse = client.execute(httpGet);
-            System.out.println(apiUrl);
             String content = IOUtils.toString(httpResponse.getEntity().getContent(), StandardCharsets.UTF_8);
 
             JSONParser parser = new JSONParser();

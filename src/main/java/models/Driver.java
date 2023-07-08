@@ -2,19 +2,25 @@ package models;
 
 import database.Enum.EAuth;
 import database.Enum.EDriverStatus;
+import services.DriverService;
+import services.RideService;
 
 import java.io.Serializable;
 import java.util.List;
+import java.util.stream.Collectors;
+
+import static services.DriverService.listDrivers;
 
 
 public class Driver extends Person implements Serializable {
     private List<Ride> listRides;
+
     private Ride currentRide;
     private Car car;
     private EDriverStatus driverStatus = EDriverStatus.AVAILABLE;
     private int salary;
     private Location location;
-    private String accountStatus = "inactive";
+    private String accountStatus = "active";
 
     static final EAuth auth = EAuth.DRIVER;
 
@@ -23,6 +29,7 @@ public class Driver extends Person implements Serializable {
 
     public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, String status, List<Ride> listRides) {
         super(name, email, password, phoneNumber);
+        this.setId(getNextId());
         this.car = car;
         this.salary = salary;
         this.accountStatus = status;
@@ -44,7 +51,11 @@ public class Driver extends Person implements Serializable {
 
 
     public List<Ride> getListRides() {
-        return listRides;
+        return RideService.listRides.stream().filter(e -> e.getDriver().getId() == DriverService.currentDriver.getId()).collect(Collectors.toList());
+    }
+
+    public void setListRides() {
+        this.listRides = RideService.listRides.stream().filter(e -> e.getDriver().getId() == DriverService.currentDriver.getId()).collect(Collectors.toList());
     }
 
     public int getSalary() {
@@ -114,5 +125,17 @@ public class Driver extends Person implements Serializable {
                 ", " + getAccountStatus() +
                 ", salary: " + salary +
                 ", accountStatus: " + accountStatus + '\n';
+    }
+
+    public static int getNextId() {
+        int max = 0;
+        if (listDrivers != null) {
+            for (Driver driver : listDrivers) {
+                if (driver.getId() > max) {
+                    max = driver.getId();
+                }
+            }
+        }
+        return max + 1;
     }
 }

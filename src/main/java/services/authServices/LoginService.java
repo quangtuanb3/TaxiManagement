@@ -28,6 +28,8 @@ public class LoginService {
             loggedIn = true;
             ClientService.currentClient = ClientService.getByEmail(email);
             clientMenu();
+        } else {
+            System.out.println("Invalid account!");
         }
 
         return loggedIn;

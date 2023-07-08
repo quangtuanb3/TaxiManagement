@@ -13,6 +13,8 @@ import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
+import static utils.AppUtils.parseDateTime;
+
 public class Startup {
 
     public static void init() {
@@ -85,21 +87,21 @@ public class Startup {
 
     private static void initRide() {
 
-
-        Ride ride1 = new Ride(1, ClientService.listClients.get(0), null,
+        Ride ride1 = new Ride(1, ClientService.listClients.get(0),null,
                 new Location("153 Phan Bội Châu, phường Trường An, Huế, Thừa Thiên Huế"), null,
-                new Location("Laguna Lăng Cô, Phú Lộc, Thừa Thiên Huế, Việt Nam"), null, 700000,
-                database.Enum.ERideStatus.WAITING, null, null, null);
+                new Location("Laguna Lăng Cô, Phú Lộc, Thừa Thiên Huế, Việt Nam"), null, null,
+                database.Enum.ERideStatus.WAITING, parseDateTime("2023-07-09 10:12:30"), null, null, null, 0);
         Ride ride2 = new Ride(2, ClientService.listClients.get(1), null,
                 new Location("Ga Huế, Phường Đúc, Huế, Thừa Thiên Huế"), null,
-                new Location("Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam"), null, 500000,
-                database.Enum.ERideStatus.WAITING, null, null, null);
+                new Location("Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam"), null, null,
+                database.Enum.ERideStatus.WAITING, parseDateTime("2023-07-08 10:12:30"), null, null, null, 0);
 
         List<Ride> listRides = new ArrayList<>();
         listRides.add(ride1);
         listRides.add(ride2);
         RideService.listRides = listRides;
         RideService.waitingRides = listRides;
+
         Serializable.serialize(listRides, AppUtils.getDirectoryPath(EPath.RIDES.toString()));
     }
 
