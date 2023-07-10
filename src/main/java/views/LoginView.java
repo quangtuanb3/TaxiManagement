@@ -1,48 +1,39 @@
 package views;
 
+import models.Client;
+import services.authServices.LoginService;
 import services.authServices.RegisterService;
 import utils.AppUtils;
+import utils.ListView;
 
-import static services.authServices.LoginService.login;
+import static utils.ListView.loginMenu;
 
 
 public class LoginView {
-    static boolean exit = false;
-
     public static void loginMenu() {
         try {
-            do {
-                System.out.println("Welcome to QT taxi");
-                System.out.println("1. Login");
-                System.out.println("2. Sign up");
-                System.out.println("0. Quit");
-                int select = AppUtils.getIntWithBound("Input choice", 0, 3);
-                switch (select) {
-                    case 1:
-                        login();
-                        break;
-                    case 2:
-                        System.out.println("1. Create new account");
-                        System.out.println("0. Back to main menu");
-                        int choice = AppUtils.getIntWithBound("Input choice", 0, 1);
-                        switch (choice) {
-                            case 1:
-                                RegisterService.register();
-                                break;
-                            case 0:
-                                exit = false;
-                                break;
-                        }
-                        break;
-                    case 0:
-                        exit = true;
-                        break;
-                }
+            ListView.printMenu(loginMenu);
+            int choice = AppUtils.getIntWithBound("Input choice", 0, 2);
+            if (choice == 0) System.exit(1);
+            if (choice == 1) {
+                LoginService.login();
             }
-            while (!exit);
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            System.out.println(e.getMessage());
         }
+    }
+
+    public static void register() {
+        System.out.println("Register: ");
+        String name = AppUtils.getString("Input Name");
+        String email = AppUtils.getString("Input Email");
+        String password = AppUtils.getString("Input Password");
+        String phoneNumber = AppUtils.getString("Input Phone number");
+        Client client = new Client(name, email, password, phoneNumber);
+
+        RegisterService.register(client);
+        //check boolean
+        loginMenu();
     }
 }
 

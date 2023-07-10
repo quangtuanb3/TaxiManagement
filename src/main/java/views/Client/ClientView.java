@@ -1,6 +1,6 @@
 package views.Client;
 
-import database.Enum.ECarType;
+import DAO.Enum.ECarType;
 import models.Location;
 import models.Ride;
 import services.ClientService;
@@ -9,6 +9,7 @@ import utils.AppUtils;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import static views.LoginView.loginMenu;
 
@@ -30,10 +31,11 @@ public class ClientView {
                 choice = AppUtils.getIntWithBound("Input choice: ", 0, 6);
                 switch (choice) {
                     case 1:
-                        rideService.create(bookRideUi());
+                        bookRideUi();
+                        clientMenu();
                         break;
                     case 2:
-                        rideService.cancelRide(cancelRideUi());
+                        cancelRideUi();
                         break;
                     case 3:
                         rideService.getRideDetail();
@@ -58,60 +60,72 @@ public class ClientView {
     }
 
     private static void updateUi() {
-        try {
 
-            System.out.println("Select field you want to update: ");
-            System.out.println("1. Name");
-            System.out.println("2. Password");
-            System.out.println("3. Phone number");
-            System.out.println("0. Back to Client menu");
-            int choice = AppUtils.getIntWithBound("Input choice", 0, 3);
-            switch (choice) {
-                case 1:
-                    String name = AppUtils.getString("Input new name:");
-                    ClientService.currentClient.setName(name);
-                    break;
-                case 2:
-                    String password;
-                    String confirmPassword;
-                    do {
-                        password = AppUtils.getString("Input new password:");
-                        confirmPassword = AppUtils.getString("Input confirm password:");
-                    } while (!Objects.equals(password, confirmPassword));
-                    ClientService.currentClient.setPassword(password);
-                    break;
-                case 3:
-                    String phone = AppUtils.getString("Input new phone number:");
-                    ClientService.currentClient.setName(phone);
-                    break;
-                case 0:
-                    System.out.println("Back to Login menu");
-                    clientMenu();
-                    break;
+        System.out.println("Select field you want to update: ");
+        System.out.println("1. Name");
+        System.out.println("2. Password");
+        System.out.println("3. Phone number");
+        System.out.println("0. Back to Client menu");
+        int choice = AppUtils.getIntWithBound("Input choice", 0, 3);
+        switch (choice) {
+            case 1:
+                String name = AppUtils.getString("Input new name:");
+                ClientService.currentClient.setName(name);
+                break;
+            case 2:
+                String password;
+                String confirmPassword;
+                do {
+                    password = AppUtils.getString("Input new password:");
+                    confirmPassword = AppUtils.getString("Input confirm password:");
+                } while (!Objects.equals(password, confirmPassword));
+                ClientService.currentClient.setPassword(password);
+                break;
+            case 3:
+                String phone = AppUtils.getString("Input new phone number:");
+                ClientService.currentClient.setName(phone);
+                break;
+            case 0:
+                System.out.println("Back to Login menu");
+                clientMenu();
+                break;
 
-            }
-
-        } catch (Exception e) {
-            throw new RuntimeException(e);
         }
+
     }
 
-    private static int cancelRideUi() {
-        rideService.print();
+    private static void cancelRideUi() {
+        System.out.println(RideService.currentRide.toString());
         int rideId = AppUtils.getInt("Input ride id: ");
-        if (!rideService.isExist(rideId)) {
+        if (!rideService.isExist(RideService.listRides.stream().filter(Ride::isWaitApprove).collect(Collectors.toList()), rideId)) {
             System.out.printf("Not found %d.\n", rideId);
-            cancelRideUi();
+            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back to preview menu", 0, 1);
+            if (choice == 1) {
+                cancelRideUi();
+            } else clientMenu();
         }
-        return rideId;
+        rideService.cancelRide(rideId);
     }
 
-    private static Ride bookRideUi() {
+    public static void bookRideUi() {
+        if (RideService.currentRide != null) {
+            System.out.println("You are already booked a ride. Please come back late");
+            return;
+        }
+
         String departAddress = AppUtils.getString("Input depart: ");
         String arriverAddress = AppUtils.getString("Input destination: ");
         LocalDateTime pickupTime = AppUtils.getDateTime("Input pickup time");
+        int expectedWaitTime = AppUtils.getIntWithBound("Input expected wait time", 10, 1000);
         int carType = AppUtils.getIntWithBound("Input Car type (1.Four seats/2.Seven seats)", 1, 2);
-        return rideService.bookRide(new Location(departAddress), new Location(arriverAddress), carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime);
+        Ride ride = rideService.bookRide(new Location(departAddress), new Location(arriverAddress), carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
+        System.out.println("Confirm your ride: ");
+        int choice = AppUtils.getIntWithBound("Press 1 to book ride or 0 to back preview menu", 0, 1);
+        if (choice == 0) {
+            bookRideUi();
+        } else {
+            rideService.create(ride);
+        }
 
     }
 }

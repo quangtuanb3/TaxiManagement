@@ -42,7 +42,7 @@ public class ClientManagerView {
     private static void getClientDetail() {
         System.out.println("Get Client's detail: ");
         int clientId = AppUtils.getInt("Input Client id: ");
-        if (!clientService.isExist(clientId)) {
+        if (!clientService.isExist(ClientService.listClients, clientId)) {
             System.out.printf("Not found %d.\n", clientId);
             getClientDetail();
         }
@@ -52,7 +52,7 @@ public class ClientManagerView {
     private static void removeClient() {
         clientService.print();
         int clientID = AppUtils.getInt("Input client id to remove: ");
-        if (!clientService.isExist(clientID)) {
+        if (!clientService.isExist(ClientService.listClients, clientID)) {
             System.out.printf("Not found %d.\n", clientID);
             removeClient();
         }

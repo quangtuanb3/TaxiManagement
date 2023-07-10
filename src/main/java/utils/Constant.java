@@ -1,8 +1,8 @@
-package database;
+package utils;
 
 import java.time.format.DateTimeFormatter;
 
-public class Const {
+public class Constant {
     public static String API_KEY = "tHhcvtGjlPCJsOE1HBmjKwL7u1j5wV1V";
     public static String MAP_GET_DISTANCE = "https://www.mapquestapi.com/directions/v2/route";
     public static String MAP_GET_LOCATION = "https://www.mapquestapi.com/geocoding/v1/reverse?key=";

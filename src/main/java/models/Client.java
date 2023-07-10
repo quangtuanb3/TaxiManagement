@@ -1,15 +1,12 @@
 package models;
 
-import database.Enum.EAuth;
+import DAO.Enum.EAuth;
 
 import java.io.Serializable;
-import java.util.List;
 
 import static services.ClientService.listClients;
 
 public class Client extends Person implements Serializable {
-    private Ride currentRide;
-    private List<Ride> listRides;
     static final String auth = EAuth.CLIENT.getAuth();
 
     public Client(String name, String email, String password, String phoneNumber) {
@@ -29,12 +26,6 @@ public class Client extends Person implements Serializable {
 
     }
 
-    public Client(String name, String email, String password, String phoneNumber, List<Ride> listRides, Ride currentRide) {
-        super(name, email, password, phoneNumber);
-        this.setId(getNextId());
-        this.currentRide = currentRide;
-        this.listRides = listRides;
-    }
     public static int getNextId() {
         int max = 0;
         if(listClients!=null){
@@ -46,4 +37,5 @@ public class Client extends Person implements Serializable {
         }
         return max + 1;
     }
+
 }

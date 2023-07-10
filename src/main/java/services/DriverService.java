@@ -1,11 +1,10 @@
 package services;
 
-import database.Enum.EPath;
+import DAO.Enum.EPath;
 import models.Driver;
 import models.Ride;
 import utils.Serializable;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -35,7 +34,7 @@ public class DriverService implements BasicCRUD<Driver> {
     }
 
     @Override
-    public void create(Driver driver) throws IOException {
+    public void create(Driver driver){
         listDrivers.add(driver);
         saveDrives();
     }
@@ -63,7 +62,7 @@ public class DriverService implements BasicCRUD<Driver> {
     }
 
     @Override
-    public boolean isExist(int driverId) {
+    public boolean isExist(List<Driver> listDrivers,int driverId) {
         Driver driver = listDrivers.stream()
                 .filter(e -> Objects.equals(e.getId(), driverId))
                 .findFirst()

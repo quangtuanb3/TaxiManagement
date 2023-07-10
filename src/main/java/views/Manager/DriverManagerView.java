@@ -1,5 +1,6 @@
 package views.Manager;
 
+import DAO.Enum.EAccountStatus;
 import models.Driver;
 import services.DriverService;
 import utils.AppUtils;
@@ -30,7 +31,7 @@ public class DriverManagerView {
                     driverService.create(addDriverUi());
                     break;
                 case 3:
-                    removeDriver();
+                    blockDriver();
                     break;
                 case 4:
                     getDriverDetail();
@@ -65,27 +66,27 @@ public class DriverManagerView {
         String email = AppUtils.getString("Input email: ");
         String password = AppUtils.getString("Input password: ");
         String phoneNumber = AppUtils.getString("Input phone number: ");
-        return new Driver(name, email, password, phoneNumber,"active");
+        return new Driver(name, email, password, phoneNumber, EAccountStatus.ACTIVE);
     }
 
     private static void getDriverDetail() {
         System.out.println("Get Driver's detail: ");
         int driverId = AppUtils.getInt("Input Driver id: ");
-        if (!driverService.isExist(driverId)) {
+        if (!driverService.isExist(DriverService.listDrivers, driverId)) {
             System.out.printf("Not found %d.\n", driverId);
             getDriverDetail();
         }
         System.out.println(driverService.getById(driverId).toString());
     }
 
-    private static void removeDriver() {
+    private static void blockDriver() {
         driverService.print();
-        int driverId = AppUtils.getInt("Input drive id to remove: ");
-        if (!driverService.isExist(driverId)) {
+        int driverId = AppUtils.getInt("Input drive id to block: ");
+        if (!driverService.isExist(DriverService.listDrivers, driverId)) {
             System.out.printf("Not found %d.\n", driverId);
-            removeDriver();
+            blockDriver();
         }
-        driverService.delete(driverId);
+        driverService.getById(driverId).setAccountStatus(EAccountStatus.BLOCKED);
         System.out.println("Remove driver successfully!");
     }
 }

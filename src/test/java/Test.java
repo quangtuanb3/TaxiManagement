@@ -1,6 +1,7 @@
-import static database.Startup.init;
-import static services.RideService.autoDeclineRide;
-import static services.RideService.printAvailableRides;
+import services.DriverService;
+import services.RideService;
+
+import static DAO.Startup.init;
 
 public class Test {
 
@@ -10,8 +11,9 @@ public class Test {
 //        System.out.println(dateTime);
 //      int duration =  getDuration(getDateTimeNow(), parseDateTime("2023-07-09 20:30:10"));
 //        System.out.println(duration);
-        init();
-        autoDeclineRide();
-        printAvailableRides();
+      init();
+        DriverService.currentDriver = DriverService.listDrivers.get(0);
+        RideService.printAvailableRides();
+
     }
 }

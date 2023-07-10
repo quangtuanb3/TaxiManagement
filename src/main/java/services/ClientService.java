@@ -1,6 +1,6 @@
 package services;
 
-import database.Enum.EPath;
+import DAO.Enum.EPath;
 import models.Client;
 import utils.Serializable;
 
@@ -55,7 +55,7 @@ public class ClientService implements BasicCRUD<Client> {
     }
 
     @Override
-    public boolean isExist(int clientId) {
+    public boolean isExist(List<Client> listClients, int clientId) {
         Client client = listClients.stream()
                 .filter(e -> Objects.equals(e.getId(), clientId))
                 .findFirst()

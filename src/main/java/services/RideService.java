@@ -1,8 +1,8 @@
 package services;
 
-import database.Enum.ECarType;
-import database.Enum.EDriverStatus;
-import database.Enum.ERideStatus;
+import DAO.Enum.ECarType;
+import DAO.Enum.EDriverStatus;
+import DAO.Enum.ERideStatus;
 import models.Driver;
 import models.Location;
 import models.Ride;
@@ -21,11 +21,12 @@ public class RideService implements BasicCRUD<Ride> {
     public static List<Driver> availableDriver;
     public static List<Ride> waitingRides;
     public static Ride currentRide;
-    private FareCalculator fareCalculator = new FareCalculator();
+    public static FareCalculator fareCalculator = new FareCalculator();
 
 
     public RideService() {
     }
+
 
     @Override
     public List<Ride> getAll() {
@@ -37,12 +38,20 @@ public class RideService implements BasicCRUD<Ride> {
         listRides.add(ride);
     }
 
-    public Ride bookRide(Location pickupLocation, Location expectedDestination, ECarType eCarType, LocalDateTime expectedPickupTime) {
-        double fare = fareCalculator.calculateFare(pickupLocation, expectedDestination, eCarType);
-        Ride ride = new Ride(ClientService.currentClient, pickupLocation, expectedDestination, fare, expectedPickupTime);
-        currentRide = ride;
-        waitingRides.add(ride);
-        return ride;
+    public Ride bookRide(Location pickupLocation, Location expectedDestination, ECarType eCarType, LocalDateTime expectedPickupTime, int expectedWaitTime) {
+        try {
+            Ride ride = new Ride(ClientService.currentClient, eCarType, pickupLocation, expectedDestination, null, expectedPickupTime, expectedWaitTime);
+            Double fare = fareCalculator.firstCalculateFare(ride);
+            ride.setFare(fare);
+            currentRide = ride;
+            waitingRides.add(ride);
+            printExpectedRide(ride);
+            return ride;
+        } catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        return null;
     }
 
     @Override
@@ -57,7 +66,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     @Override
-    public boolean isExist(int rideId) {
+    public boolean isExist(List<Ride> listRides, int rideId) {
         Ride ride = listRides.stream()
                 .filter(e -> Objects.equals(e.getId(), rideId))
                 .findFirst()
@@ -92,11 +101,11 @@ public class RideService implements BasicCRUD<Ride> {
 
     public void cancelRide(int rideId) {
         getById(rideId).setStatus(ERideStatus.CANCELLED);
-        updateRideStatus(getById(rideId), ERideStatus.CANCELLED);
+        RideService.currentRide = null;
     }
 
     public void getRideDetail() {
-        System.out.println(currentRide.toString());
+        System.out.println(RideService.currentRide.toString());
     }
 
     public void approve(int rideId) {
@@ -118,14 +127,14 @@ public class RideService implements BasicCRUD<Ride> {
         currentRide.setConfirmedTime(getDateTimeNow());
     }
 
-    public void finishRide(Location actualDestination, int waitTime) {
-        double fare = fareCalculator.calculateFare(currentRide.getPickupLocation(),
-                actualDestination, currentRide.getDriver().getCar().getCarType(), waitTime);
-        currentRide.setFare(fare);
+    public void finishRide(Location actualDestination, int actualWaitTime) {
         currentRide.setActualDestination(actualDestination);
-        currentRide.setWaitTime(waitTime);
+        currentRide.setActualWaitTime(actualWaitTime);
+        double fare = fareCalculator.lastCalculateFare(currentRide);
+        currentRide.setFare(fare);
         currentRide.setEndTime(getDateTimeNow());
         currentRide.setStatus(ERideStatus.COMPLETED);
+        printActualRide(currentRide);
         update(currentRide);
         currentRide = null;
         DriverService.currentDriver.setCurrentRide(null);
@@ -133,10 +142,17 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static void printAvailableRides() {
+        List<Ride> availableRides = waitingRides.stream()
+                .filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 60)
+                .collect(Collectors.toList())
+                .stream()
+                .filter(e -> e.getCarType().equals(DriverService.currentDriver.getCar().getCarType()))
+                .collect(Collectors.toList());
+
         System.out.println("ID\tName\t\tPickup\t\t\tDestination\t\tFare");
         System.out.println("----------------------------------------------------------");
         autoDeclineRide();
-        for (Ride ride : waitingRides.stream().filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 15).collect(Collectors.toList())) {
+        for (Ride ride : availableRides) {
             System.out.printf("%s\t%s\t\t%s\t%s\t\t%.2f%n",
                     ride.getId(),
                     ride.getClient().getName(),
@@ -156,5 +172,36 @@ public class RideService implements BasicCRUD<Ride> {
         }
     }
 
+    public static void printExpectedRide(Ride ride) {
+        if (ride == null) {
+            System.out.println("There is no such ride");
+            return;
+        }
+        System.out.printf("%d \t %s \t \t %s \t %s \t\t %d \t %f \t %d\t %f \n",
+                ride.getId(),
+                ride.getClient().getName(),
+                ride.getPickupLocation().getAddress(),
+                ride.getExpectedDestination().getAddress(),
+                ride.getCarType().getSeat(),
+                fareCalculator.getExpectedDistance(),
+                ride.getExpectedWaitTime(),
+                ride.getFare());
+    }
+
+    public static void printActualRide(Ride ride) {
+        if (ride == null) {
+            System.out.println("There is no such ride");
+            return;
+        }
+        System.out.printf("%d \t %s \t \t %s \t %s \t\t %d \t %f \t %d\t %f",
+                ride.getId(),
+                ride.getClient().getName(),
+                ride.getPickupLocation().getAddress(),
+                ride.getActualDestination().getAddress(),
+                ride.getCarType().getSeat(),
+                ride.getActualDistance(),
+                ride.getActualWaitTime(),
+                ride.getFare());
+    }
 
 }

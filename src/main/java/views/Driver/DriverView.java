@@ -8,7 +8,7 @@ import utils.AppUtils;
 import java.io.IOException;
 import java.util.stream.Collectors;
 
-import static models.Ride.printRide;
+import static services.RideService.printExpectedRide;
 import static services.RideService.waitingRides;
 import static utils.AppUtils.getDateTimeNow;
 import static utils.AppUtils.getDuration;
@@ -44,7 +44,7 @@ public class DriverView {
                     break;
                 case 5:
                     System.out.println();
-                    printRide(DriverService.currentDriver.getCurrentRide());
+                    printExpectedRide(DriverService.currentDriver.getCurrentRide());
                     break;
                 case 6:
                     DriverService.printRideHistory();
@@ -77,12 +77,14 @@ public class DriverView {
                 } while (choice != 0);
             }
             int rideId = AppUtils.getInt("Input ride id: ");
-            if (waitingRides.stream().filter(e -> getDuration(getDateTimeNow(),
-                    e.getExpectedPickupTime()) < 15).collect(Collectors.toList())
+            if (waitingRides.stream().filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 15)
+                    .collect(Collectors.toList()).
+                    stream().filter(e -> e.getCarType().getSeat() == DriverService.currentDriver.getCar().getCarType().getSeat())
+                    .collect(Collectors.toList())
                     .stream().anyMatch(ride -> ride.getId() == rideId)) {
                 rideService.approve(rideId);
             } else {
-                System.out.println("Ride Id not found. Please input again: ");
+                System.out.println("Ride's not found. Please input again: ");
                 ApproveRideUi();
             }
         } catch (IOException e) {

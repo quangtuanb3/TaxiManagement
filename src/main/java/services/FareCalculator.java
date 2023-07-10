@@ -1,28 +1,42 @@
 package services;
 
-import database.Enum.ECarType;
-import models.Location;
 import models.Ride;
 import utils.DistanceCalculator;
 
 public class FareCalculator {
-    Ride ride;
+    private Double expectedDistance;
+    private Double actualDistance;
 
-    public double calculateFare(Location pickupLocation, Location destination, ECarType eCarType) {
-        double distance = DistanceCalculator.calculateDistance(pickupLocation.getAddress(), destination.getAddress());
-        if (distance <= 30) {
-            return distance * eCarType.getPriceUnder30() + eCarType.getOpenPrice();
+    public FareCalculator() {
+    }
+
+    public Double firstCalculateFare(Ride ride) {
+        expectedDistance = DistanceCalculator.calculateDistance(ride.getPickupLocation().getAddress(), ride.getExpectedDestination().getAddress());
+        if (expectedDistance <= 30) {
+            return expectedDistance * ride.getCarType().getPriceUnder30()
+                    + ride.getCarType().getOpenPrice() + ride.getExpectedWaitTime()
+                    * ride.getCarType().getWaitPrice();
         } else {
-            return (distance - 30) * eCarType.getPriceUpper30() + 30 * eCarType.getPriceUnder30() + eCarType.getOpenPrice();
+            return (expectedDistance - 30) * ride.getCarType().getPriceUpper30() + 30 * ride.getCarType().getPriceUnder30() + ride.getCarType().getOpenPrice() + ride.getExpectedWaitTime() * ride.getCarType().getWaitPrice();
         }
     }
 
-    public double calculateFare(Location pickupLocation, Location destination, ECarType eCarType, int waitTime) {
-        double distance = DistanceCalculator.calculateDistance(pickupLocation.getAddress(), destination.getAddress());
-        if (distance <= 30) {
-            return distance * eCarType.getPriceUnder30() + eCarType.getOpenPrice() + waitTime * eCarType.getWaitPrice();
+    public Double lastCalculateFare(Ride ride) {
+        actualDistance = DistanceCalculator.calculateDistance(ride.getPickupLocation().getAddress(), ride.getActualDestination().getAddress());
+        if (actualDistance <= 30) {
+            return actualDistance * ride.getCarType().getPriceUnder30() + ride.getCarType().getOpenPrice() + ride.getActualWaitTime() * ride.getCarType().getWaitPrice();
         } else {
-            return (distance - 30) * eCarType.getPriceUpper30() + 30 * eCarType.getPriceUnder30() + eCarType.getOpenPrice() + waitTime * eCarType.getWaitPrice();
+            return (actualDistance - 30) * ride.getCarType().getPriceUpper30() + 30 * ride.getCarType().getPriceUnder30() + ride.getCarType().getOpenPrice() + ride.getActualWaitTime() * ride.getCarType().getWaitPrice();
         }
     }
+
+    public  Double getExpectedDistance() {
+        return expectedDistance;
+    }
+
+    public  Double getActualDistance() {
+        return actualDistance;
+    }
+
+
 }

@@ -1,11 +1,10 @@
 package services;
 
-import database.Enum.EPath;
+import DAO.Enum.EPath;
 import models.Car;
 import models.Driver;
 import utils.Serializable;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -36,7 +35,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
-    public void create(Car car) throws IOException {
+    public void create(Car car)  {
         listCars.add(car);
         save();
     }
@@ -57,7 +56,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
-    public boolean isExist(int carId) {
+    public boolean isExist(List<Car> listCars, int carId) {
         Car car = listCars.stream()
                 .filter(e -> Objects.equals(e.getId(), carId))
                 .findFirst()
@@ -66,7 +65,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
-    public void delete(int carId) throws IOException {
+    public void delete(int carId)  {
         listCars = listCars.stream()
                 .filter(e -> !Objects.equals(e.getId(), carId))
                 .collect(Collectors.toList());

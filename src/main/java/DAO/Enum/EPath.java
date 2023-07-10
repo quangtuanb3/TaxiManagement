@@ -1,4 +1,4 @@
-package database.Enum;
+package DAO.Enum;
 
 public enum EPath {
     CARS("cars.txt"),

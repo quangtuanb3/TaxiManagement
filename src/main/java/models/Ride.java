@@ -1,16 +1,20 @@
 package models;
 
-import database.Enum.ERideStatus;
+import DAO.Enum.ECarType;
+import DAO.Enum.ERideStatus;
+import utils.DistanceCalculator;
 
 import java.io.Serializable;
 import java.time.LocalDateTime;
 
+import static services.RideService.fareCalculator;
 import static services.RideService.listRides;
 
 public class Ride implements Serializable {
     private int id;
     private Client client;
     private Driver driver;
+    private ECarType eCarType;
     private Location pickupLocation;
     private Location actualDestination;
     private Location expectedDestination;
@@ -21,13 +25,15 @@ public class Ride implements Serializable {
     private LocalDateTime startTime;
     private LocalDateTime confirmedTime;
     private LocalDateTime endTime;
-    private int waitTime;
+    private Integer expectedWaitTime;
+    private Integer actualWaitTime;
 
 
-    public Ride(int id, Client client, Driver driver, Location pickupLocation, Location actualDestination, Location expectedDestination, Location driverLocation, Double fare, ERideStatus status, LocalDateTime expectedPickupTime, LocalDateTime startTime, LocalDateTime confirmedTime, LocalDateTime endTime, int waitTime) {
+    public Ride(int id, Client client, Driver driver, ECarType eCarType, Location pickupLocation, Location actualDestination, Location expectedDestination, Location driverLocation, Double fare, ERideStatus status, LocalDateTime expectedPickupTime, LocalDateTime startTime, LocalDateTime confirmedTime, LocalDateTime endTime, Integer expectedWaitTime, Integer actualWaitTime) {
         this.id = id;
         this.client = client;
         this.driver = driver;
+        this.eCarType = eCarType;
         this.pickupLocation = pickupLocation;
         this.actualDestination = actualDestination;
         this.expectedDestination = expectedDestination;
@@ -38,7 +44,8 @@ public class Ride implements Serializable {
         this.startTime = startTime;
         this.confirmedTime = confirmedTime;
         this.endTime = endTime;
-        this.waitTime = waitTime;
+        this.expectedWaitTime = expectedWaitTime;
+        this.actualWaitTime = actualWaitTime;
     }
 
     public Ride() {
@@ -56,14 +63,16 @@ public class Ride implements Serializable {
         this.driverLocation = driverLocation;
     }
 
-    public Ride(Client client, Location pickupLocation, Location expectedDestination, Double fare, LocalDateTime expectedPickupTime) {
+    public Ride(Client client, ECarType eCarType, Location pickupLocation, Location expectedDestination, Double fare, LocalDateTime expectedPickupTime, int expectedWaitTime) {
         this.id = getNextId();
         this.client = client;
         this.pickupLocation = pickupLocation;
         this.expectedDestination = expectedDestination;
         this.fare = fare;
         this.status = ERideStatus.WAITING;
-        this.startTime = expectedPickupTime;
+        this.expectedPickupTime = expectedPickupTime;
+        this.expectedWaitTime = expectedWaitTime;
+        this.eCarType = eCarType;
     }
 
     // Getters and setters for the properties
@@ -73,38 +82,31 @@ public class Ride implements Serializable {
 
     @Override
     public String toString() {
-        return "Ride{" +
-                "id=" + id +
-                ", clients=" + client +
-                ", driver =" + driver +
-                ", car=" + driver.getCar().getLicensePlate() +
-                ", pickupLocation=" + pickupLocation +
-                ", actualDestination=" + actualDestination +
-                ", expectedDestination=" + expectedDestination +
-                ", DriverLocation=" + driverLocation +
-                ", fare=" + fare +
-                ", status=" + status +
-                ", startTime=" + startTime +
-                ", endTime=" + endTime +
-                ", wait=" + waitTime +
-                '}';
+        return "id:" + id +"\n"+
+                "Client Name: \t \t \t " + client.getName() + "\n"+
+                "Driver Name: \t\t\t" + (driver == null ? "waiting" : driver.getName()) +"\n"+
+                "Pickup Location: \t\t\t" + pickupLocation.getAddress() +"\n"+
+                "Destination: \t\t" + (actualDestination == null ? expectedDestination.getAddress() : actualDestination.getAddress()) +"\n"+
+                "Distance \t\t\t " + (fareCalculator.getActualDistance() == null ? fareCalculator.getExpectedDistance() : fareCalculator.getActualDistance()) +"\n"+
+                "Wait time \t\t\t" + (actualWaitTime == null ? expectedWaitTime : actualWaitTime) +"\n"+
+                "Fare \t\t\t" + fare;
     }
 
-    public static void printRide(Ride ride) {
-        if (ride == null) {
-            System.out.println("There is no ride");
-            return;
-        }
-        System.out.printf("%s\t%s\t\t%s\t%s\t\t%.2f%n",
-                ride.getId(),
-                ride.getClient().getName(),
-                ride.getPickupLocation().getAddress(),
-                ride.getExpectedDestination().getAddress(),
-                ride.getFare());
-    }
 
     public void setId(int id) {
         this.id = id;
+    }
+
+    public ECarType getCarType() {
+        return eCarType;
+    }
+
+    public Double getExpectedDistance() {
+        return DistanceCalculator.getDistance(pickupLocation.getAddress(), expectedDestination.getAddress());
+    }
+
+    public Double getActualDistance() {
+        return DistanceCalculator.getDistance(pickupLocation.getAddress(), actualDestination.getAddress());
     }
 
     public Client getClient() {
@@ -147,8 +149,20 @@ public class Ride implements Serializable {
         this.expectedDestination = expectedDestination;
     }
 
-    public int getWaitTime() {
-        return waitTime;
+    public int getExpectedWaitTime() {
+        return expectedWaitTime;
+    }
+
+    public void setExpectedWaitTime(int expectedWaitTime) {
+        this.expectedWaitTime = expectedWaitTime;
+    }
+
+    public int getActualWaitTime() {
+        return actualWaitTime;
+    }
+
+    public void setActualWaitTime(int actualWaitTime) {
+        this.actualWaitTime = actualWaitTime;
     }
 
     public LocalDateTime getExpectedPickupTime() {
@@ -159,9 +173,6 @@ public class Ride implements Serializable {
         this.expectedPickupTime = expectedPickupTime;
     }
 
-    public void setWaitTime(int waitTime) {
-        this.waitTime = waitTime;
-    }
 
     public Double getFare() {
         return fare;

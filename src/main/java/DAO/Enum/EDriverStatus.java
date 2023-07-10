@@ -1,4 +1,4 @@
-package database.Enum;
+package DAO.Enum;
 
 public enum EDriverStatus {
     AVAILABLE("available"),

@@ -1,6 +1,5 @@
 package utils;
 
-import database.Const;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -18,8 +17,8 @@ public class DistanceCalculator {
         String fromAddress = depart.replace(" ", "%20").replace(",", "%2C");
         String toAddress = arrive.replace(" ", "%20").replace(",", "%2C");
         // Construct the API URL
-        String apiUrl = Const.MAP_GET_DISTANCE +
-                "?key=" + Const.API_KEY +
+        String apiUrl = Constant.MAP_GET_DISTANCE +
+                "?key=" + Constant.API_KEY +
                 "&from=" + fromAddress +
                 "&to=" + toAddress;
         try {
@@ -50,11 +49,4 @@ public class DistanceCalculator {
         }
     }
 
-//    public static void main(String[] args) {
-//       depart = "28 Nguyễn Tri Phương, Huế, Việt Nam";
-//        arriver = "Laguna, Cù Dù, Lộc Vĩnh, Phú Lộc, Việt Nam";
-//      double distance =  getDistance("depart", "arriver");
-//        System.out.println(distance);
-//
-//    }
 }

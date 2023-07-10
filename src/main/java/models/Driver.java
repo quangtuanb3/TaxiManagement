@@ -1,7 +1,8 @@
 package models;
 
-import database.Enum.EAuth;
-import database.Enum.EDriverStatus;
+import DAO.Enum.EAccountStatus;
+import DAO.Enum.EAuth;
+import DAO.Enum.EDriverStatus;
 import services.DriverService;
 import services.RideService;
 
@@ -13,30 +14,30 @@ import static services.DriverService.listDrivers;
 
 
 public class Driver extends Person implements Serializable {
-    private List<Ride> listRides;
+
 
     private Ride currentRide;
     private Car car;
     private EDriverStatus driverStatus = EDriverStatus.AVAILABLE;
     private int salary;
     private Location location;
-    private String accountStatus = "active";
+    private EAccountStatus accountStatus;
 
     static final EAuth auth = EAuth.DRIVER;
 
     public Driver() {
     }
 
-    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, String status, List<Ride> listRides) {
+    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, EAccountStatus status) {
         super(name, email, password, phoneNumber);
         this.setId(getNextId());
         this.car = car;
         this.salary = salary;
         this.accountStatus = status;
-        this.listRides = listRides;
+
     }
 
-    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, EDriverStatus driverStatus, String accountStatus) {
+    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, EDriverStatus driverStatus, EAccountStatus accountStatus) {
         super(name, email, password, phoneNumber);
         this.car = car;
         this.salary = salary;
@@ -44,7 +45,7 @@ public class Driver extends Person implements Serializable {
         this.accountStatus = accountStatus;
     }
 
-    public Driver(String name, String email, String password, String phoneNumber, String accountStatus) {
+    public Driver(String name, String email, String password, String phoneNumber, EAccountStatus accountStatus) {
         super(name, email, password, phoneNumber);
         this.accountStatus = accountStatus;
     }
@@ -54,9 +55,6 @@ public class Driver extends Person implements Serializable {
         return RideService.listRides.stream().filter(e -> e.getDriver().getId() == DriverService.currentDriver.getId()).collect(Collectors.toList());
     }
 
-    public void setListRides() {
-        this.listRides = RideService.listRides.stream().filter(e -> e.getDriver().getId() == DriverService.currentDriver.getId()).collect(Collectors.toList());
-    }
 
     public int getSalary() {
         return salary;
@@ -83,9 +81,6 @@ public class Driver extends Person implements Serializable {
         this.currentRide = currentRide;
     }
 
-    public void setListRides(List<Ride> listRides) {
-        this.listRides = listRides;
-    }
 
     public Ride getCurrentRide() {
         return currentRide;
@@ -107,11 +102,11 @@ public class Driver extends Person implements Serializable {
         this.driverStatus = status;
     }
 
-    public String getAccountStatus() {
+    public EAccountStatus getAccountStatus() {
         return accountStatus;
     }
 
-    public void setAccountStatus(String accountStatus) {
+    public void setAccountStatus(EAccountStatus accountStatus) {
         this.accountStatus = accountStatus;
     }
 

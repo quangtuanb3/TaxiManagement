@@ -1,8 +1,8 @@
-package database.Enum;
+package DAO.Enum;
 
 public enum ECarType {
-    FOUR(4, 9000, 10500, 9000, 20000),
-    SEVEN(7, 10000, 11000, 10000, 22000);
+    FOUR(4, 9000, 10500, 9000, 2000),
+    SEVEN(7, 10000, 11000, 10000, 2200);
 
     private final int seat;
     private final int openPrice;

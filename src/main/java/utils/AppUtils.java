@@ -11,7 +11,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Scanner;
 
-import static database.Const.DATE_TIME_FORMATTER;
+import static utils.Constant.DATE_TIME_FORMATTER;
 
 public class AppUtils {
     private static Scanner sc;

@@ -1,6 +1,7 @@
 package models;
 
-import database.Enum.ECarType;
+import DAO.Enum.ECarStatus;
+import DAO.Enum.ECarType;
 
 import java.io.Serializable;
 import java.sql.Date;
@@ -13,18 +14,16 @@ public class Car implements Serializable {
     private String model;
     private String licensePlate;
     private ECarType carType;
-    private int price;
-    private int waitPrice;
     private Date registrationExpiryDate;
     private Date insuranceExpiryDate;
     Driver driver = new Driver();
-    String status = "Using";
+    ECarStatus status = ECarStatus.USING;
 
     public Car() {
 
     }
 
-    public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate, Driver driver, String status) {
+    public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate, Driver driver, ECarStatus status) {
         this.model = model;
         this.licensePlate = licensePlate;
         this.carType = carType;
@@ -57,8 +56,7 @@ public class Car implements Serializable {
                         ", priceUpper30 =" + carType.getPriceUpper30() + '\'' +
                         ", waitPrice=" + carType.getWaitPrice() + '\'' +
                         ", registrationExpiryDate='" + registrationExpiryDate + '\'' +
-                        ", insuranceExpiryDate='" + insuranceExpiryDate + '\''
-                        +
+                        ", insuranceExpiryDate='" + insuranceExpiryDate + '\'' +
                         ", driver Id='" + this.driver.getId() + '\'' +
                         ", driver Name ='" + this.driver.getName() + '\n'
                 ;

@@ -1,16 +1,22 @@
 1.  ClientAccount = anhtuan@gmail.com
-    Password = 123456
+    Password = 1234
+
     depart = 28 Nguyễn Tri Phương, Vĩnh Ninh, Huế, Việt Nam
+
     arriver1 = Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam
+
     arriver2 = Thị trấn A Lưới, A Lưới, Thừa Thiên Huế, Việt Nam
-    pickup time = 2023-07-09 10:10:00
+
+    arriver3 = 12 Trần Quốc Toản, phường Tây Lộc, Huế, Thừa Thiên Huế, Việt Nam
+
+    pickup time = 2023-07-10 10:10:00
 
 
 2.  DriverAcc: tythiwin@gmail.com
-    Password: 123456
+    Password: 1234
 
 3. Admin: tuan@gmail.com
-   Password: 123456
+   Password: 1234
 
 4. New acc: Duy Hơi Mạnh
    Email: duymanh@gmail.com
