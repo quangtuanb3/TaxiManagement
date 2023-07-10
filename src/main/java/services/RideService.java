@@ -2,10 +2,14 @@ package services;
 
 import DAO.Enum.ECarType;
 import DAO.Enum.EDriverStatus;
+import DAO.Enum.EPath;
 import DAO.Enum.ERideStatus;
+import models.Client;
 import models.Driver;
 import models.Location;
 import models.Ride;
+import services.authServices.LoginService;
+import utils.Serializable;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -18,16 +22,17 @@ import static utils.AppUtils.getDuration;
 
 public class RideService implements BasicCRUD<Ride> {
     public static List<Ride> listRides;
+    static {
+        listRides = (List<Ride>) Serializable.deserialize(EPath.RIDES.getFilePath());
+
+    }
     public static List<Driver> availableDriver;
     public static List<Ride> waitingRides;
     public static Ride currentRide;
     public static FareCalculator fareCalculator = new FareCalculator();
 
-
     public RideService() {
     }
-
-
     @Override
     public List<Ride> getAll() {
         return listRides;
@@ -40,7 +45,7 @@ public class RideService implements BasicCRUD<Ride> {
 
     public Ride bookRide(Location pickupLocation, Location expectedDestination, ECarType eCarType, LocalDateTime expectedPickupTime, int expectedWaitTime) {
         try {
-            Ride ride = new Ride(ClientService.currentClient, eCarType, pickupLocation, expectedDestination, null, expectedPickupTime, expectedWaitTime);
+            Ride ride = new Ride((Client) LoginService.currentUser, eCarType, pickupLocation, expectedDestination, null, expectedPickupTime, expectedWaitTime);
             Double fare = fareCalculator.firstCalculateFare(ride);
             ride.setFare(fare);
             currentRide = ride;
@@ -66,7 +71,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     @Override
-    public boolean isExist(List<Ride> listRides, int rideId) {
+    public boolean isExist(int rideId) {
         Ride ride = listRides.stream()
                 .filter(e -> Objects.equals(e.getId(), rideId))
                 .findFirst()
@@ -74,6 +79,7 @@ public class RideService implements BasicCRUD<Ride> {
         return ride != null;
     }
 
+    //    public check
     @Override
     public void delete(int rideId) {
         listRides = listRides.stream()
@@ -204,4 +210,7 @@ public class RideService implements BasicCRUD<Ride> {
                 ride.getFare());
     }
 
+    public boolean isInList(List<Ride> list, int rideId) {
+        return list.stream().anyMatch(e -> e.getId() == rideId);
+    }
 }

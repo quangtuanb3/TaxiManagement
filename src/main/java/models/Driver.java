@@ -3,19 +3,13 @@ package models;
 import DAO.Enum.EAccountStatus;
 import DAO.Enum.EAuth;
 import DAO.Enum.EDriverStatus;
-import services.DriverService;
-import services.RideService;
 
 import java.io.Serializable;
-import java.util.List;
-import java.util.stream.Collectors;
 
 import static services.DriverService.listDrivers;
 
 
 public class Driver extends Person implements Serializable {
-
-
     private Ride currentRide;
     private Car car;
     private EDriverStatus driverStatus = EDriverStatus.AVAILABLE;
@@ -50,10 +44,6 @@ public class Driver extends Person implements Serializable {
         this.accountStatus = accountStatus;
     }
 
-
-    public List<Ride> getListRides() {
-        return RideService.listRides.stream().filter(e -> e.getDriver().getId() == DriverService.currentDriver.getId()).collect(Collectors.toList());
-    }
 
 
     public int getSalary() {

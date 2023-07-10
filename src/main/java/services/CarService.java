@@ -13,6 +13,9 @@ import java.util.stream.Collectors;
 public class CarService implements BasicCRUD<Car> {
     public static List<Car> listCars;
 
+    static {
+        listCars = (List<Car>) Serializable.deserialize(EPath.CARS.getFilePath());
+    }
 
     public CarService() {
     }
@@ -35,7 +38,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
-    public void create(Car car)  {
+    public void create(Car car) {
         listCars.add(car);
         save();
     }
@@ -56,7 +59,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
-    public boolean isExist(List<Car> listCars, int carId) {
+    public boolean isExist( int carId) {
         Car car = listCars.stream()
                 .filter(e -> Objects.equals(e.getId(), carId))
                 .findFirst()
@@ -65,7 +68,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
-    public void delete(int carId)  {
+    public void delete(int carId) {
         listCars = listCars.stream()
                 .filter(e -> !Objects.equals(e.getId(), carId))
                 .collect(Collectors.toList());

@@ -72,7 +72,7 @@ public class DriverManagerView {
     private static void getDriverDetail() {
         System.out.println("Get Driver's detail: ");
         int driverId = AppUtils.getInt("Input Driver id: ");
-        if (!driverService.isExist(DriverService.listDrivers, driverId)) {
+        if (!driverService.isExist( driverId)) {
             System.out.printf("Not found %d.\n", driverId);
             getDriverDetail();
         }
@@ -82,7 +82,7 @@ public class DriverManagerView {
     private static void blockDriver() {
         driverService.print();
         int driverId = AppUtils.getInt("Input drive id to block: ");
-        if (!driverService.isExist(DriverService.listDrivers, driverId)) {
+        if (!driverService.isExist( driverId)) {
             System.out.printf("Not found %d.\n", driverId);
             blockDriver();
         }

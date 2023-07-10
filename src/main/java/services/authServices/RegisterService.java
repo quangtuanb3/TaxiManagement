@@ -3,17 +3,14 @@ package services.authServices;
 import models.Client;
 import services.ClientService;
 
-import static views.LoginView.loginMenu;
-
 public class RegisterService {
-    public static void register(Client client) {
-        //validate
-        // make method return boolean
-        //
+    public static boolean register(Client client) {
+        if (ClientService.listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))) {
+            return false;
+        }
         ClientService.listClients.add(client);
         ClientService.save();
-
-        loginMenu();
+        return true;
     }
 }
 

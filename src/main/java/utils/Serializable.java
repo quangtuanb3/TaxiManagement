@@ -1,11 +1,11 @@
 package utils;
 
 import java.io.*;
+import java.util.ArrayList;
 
 public class Serializable {
-
     public static Object deserialize(String fileName) {
-        Object obj = null;
+        Object obj = new ArrayList<>();
         try {
             FileInputStream fis = new FileInputStream(fileName);
             var ois = new ObjectInputStream(fis);

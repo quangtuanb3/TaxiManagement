@@ -13,6 +13,6 @@ public interface BasicCRUD<T> {
 
     void delete(int id) ;
 
-    boolean isExist(List<T> list, int id);
+    boolean isExist(int id);
 
 }

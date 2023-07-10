@@ -1,5 +1,6 @@
 package services.authServices;
 
+import models.Person;
 import services.ClientService;
 import services.DriverService;
 import services.ManagerService;
@@ -12,26 +13,24 @@ import static views.Driver.DriverView.driverMenu;
 import static views.Manager.MangerView.managerMenu;
 
 public class LoginService {
-    public static boolean login() throws IOException {
-        boolean loggedIn = false;
+    public static Person currentUser;
+
+    public static void login() throws IOException {
         String email = AppUtils.getString("Input username: ");
         String password = AppUtils.getString("Input password");
-        if (ManagerService.getByEmail(email)!=null && ManagerService.getByEmail(email).getPassword().equals(password)) {
-            loggedIn = true;
-            ManagerService.currentManager = ManagerService.getByEmail(email);
+        if (ManagerService.getByEmail(email) != null && ManagerService.getByEmail(email).getPassword().equals(password)) {
+            currentUser = ManagerService.getByEmail(email);
             managerMenu();
-        } else if (DriverService.getByEmail(email)!=null && DriverService.getByEmail(email).getPassword().equals(password)&&DriverService.getByEmail(email).getAccountStatus().equals("active") ) {
-            loggedIn = true;
-            DriverService.currentDriver = DriverService.getByEmail(email);
+        } else if (DriverService.getByEmail(email) != null && DriverService.getByEmail(email).getPassword().equals(password)) {
+            currentUser = DriverService.getByEmail(email);
             driverMenu();
-        } else if (ClientService.getByEmail(email)!=null && ClientService.getByEmail(email).getPassword().equals(password)) {
-            loggedIn = true;
-            ClientService.currentClient = ClientService.getByEmail(email);
+        } else if (ClientService.getByEmail(email) != null && ClientService.getByEmail(email).getPassword().equals(password)) {
+            currentUser = ClientService.getByEmail(email);
             clientMenu();
         } else {
             System.out.println("Invalid account!");
         }
-
-        return loggedIn;
     }
+
 }
+

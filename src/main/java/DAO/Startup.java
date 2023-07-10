@@ -14,19 +14,19 @@ import static utils.AppUtils.parseDateTime;
 public class Startup {
 
     public static void init() {
-        if (CarService.listCars == null) {
+        if (CarService.listCars.isEmpty()) {
             initCars();
         }
-        if (DriverService.listDrivers == null) {
+        if (DriverService.listDrivers.isEmpty()) {
             initDrivers();
         }
-        if (ClientService.listClients == null) {
+        if (ClientService.listClients.isEmpty()) {
             initClients();
         }
-        if (ManagerService.listManagers == null) {
+        if (ManagerService.listManagers.isEmpty()) {
             initManager();
         }
-        if (RideService.listRides == null) {
+        if (RideService.listRides.isEmpty()) {
             initRide();
         }
         CarService.listCars.get(0).setDriver(DriverService.listDrivers.get(0));
@@ -82,7 +82,6 @@ public class Startup {
     }
 
     private static void initRide() {
-
         Ride ride1 = new Ride(1, ClientService.listClients.get(0), null, ECarType.FOUR,
                 new Location("153 Phan Bội Châu, phường Trường An, Huế, Thừa Thiên Huế"), null,
                 new Location("Laguna Lăng Cô, Phú Lộc, Thừa Thiên Huế, Việt Nam"), null, null,

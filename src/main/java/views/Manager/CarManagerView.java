@@ -4,7 +4,6 @@ import DAO.Enum.ECarType;
 import models.Car;
 import models.Driver;
 import services.CarService;
-import services.DriverService;
 import utils.AppUtils;
 
 import java.sql.Date;
@@ -64,7 +63,7 @@ public class CarManagerView {
             System.out.println("Update Car's Information: ");
             carService.print();
             int carId = AppUtils.getInt("Input Car's Id: ");
-            if (carService.isExist(CarService.listCars, carId)) {
+            if (carService.isExist( carId)) {
                 Car car = carService.getById(carId);
                 System.out.println("1. Edit Model");
                 System.out.println("2. Edit license plate number");
@@ -113,7 +112,7 @@ public class CarManagerView {
     static void getCarDetail() {
         System.out.println("Get Car's detail");
         int carId = AppUtils.getInt("Input Car id: ");
-        if (!carService.isExist(CarService.listCars, carId)) {
+        if (!carService.isExist(carId)) {
             System.out.printf("Not found %d.\n", carId);
             getCarDetail();
         }
@@ -125,11 +124,11 @@ public class CarManagerView {
         System.out.println(str);
         driverService.print();
         int driverId = AppUtils.getInt("Input Driver Id: ");
-        if (driverService.isExist(DriverService.listDrivers, driverId)) {
+        if (driverService.isExist(driverId)) {
             Driver driver = driverService.getById(driverId);
             carService.print();
             int carId = AppUtils.getInt("Input Car Id: ");
-            if (carService.isExist(CarService.listCars, carId)) {
+            if (carService.isExist(carId)) {
                 Car car = carService.getById(carId);
                 carService.assignCarToDriver(car, driver);
             }
@@ -141,7 +140,7 @@ public class CarManagerView {
         try {
             carService.print();
             int carId = AppUtils.getInt("Input car id to remove: ");
-            if (!carService.isExist(CarService.listCars, carId)) {
+            if (!carService.isExist( carId)) {
                 System.out.printf("Not found %d.\n", carId);
                 removeCar();
             }

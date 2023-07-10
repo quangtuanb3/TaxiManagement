@@ -2,6 +2,7 @@ package services;
 
 import DAO.Enum.EPath;
 import models.Client;
+import services.authServices.LoginService;
 import utils.Serializable;
 
 import java.util.List;
@@ -11,6 +12,12 @@ import java.util.stream.Collectors;
 public class ClientService implements BasicCRUD<Client> {
     public static List<Client> listClients;
     public static Client currentClient;
+    static {
+        listClients = (List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath());
+        if (LoginService.currentUser instanceof Client) {
+            currentClient = (Client) LoginService.currentUser;
+        }
+    }
 
     public ClientService() {
     }
@@ -55,7 +62,7 @@ public class ClientService implements BasicCRUD<Client> {
     }
 
     @Override
-    public boolean isExist(List<Client> listClients, int clientId) {
+    public boolean isExist( int clientId) {
         Client client = listClients.stream()
                 .filter(e -> Objects.equals(e.getId(), clientId))
                 .findFirst()
