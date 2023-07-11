@@ -31,7 +31,6 @@ public class Car implements Serializable {
         this.registrationExpiryDate = registrationExpiryDate;
         this.driver = driver;
         this.status = status;
-        this.setId(getNextId());
     }
 
     public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate) {
@@ -40,7 +39,6 @@ public class Car implements Serializable {
         this.carType = carType;
         this.insuranceExpiryDate = insuranceExpiryDate;
         this.registrationExpiryDate = registrationExpiryDate;
-        this.setId(getNextId());
     }
 
 
@@ -80,9 +78,6 @@ public class Car implements Serializable {
         this.insuranceExpiryDate = insuranceExpiryDate;
     }
 
-    public void setId(int id) {
-        this.id = id;
-    }
 
     public String getModel() {
         return model;
@@ -122,15 +117,20 @@ public class Car implements Serializable {
     }
 
     public int getId() {
-        return this.id;
+        return id;
     }
 
     public void printDetail() {
-        System.out.println("ID\tLicense Plate\tSeat\tOpen Price\tPrice Under 30\tPrice Upper 30\tInsurance Expiry\tRegistration Expiry");
+        System.out.println("ID\tLicense Plate\t\tSeat\tOpen Price\tPrice Under 30\tPrice Upper 30\tInsurance Expiry\tRegistration Expiry");
         System.out.println("-------------------------------------------------------------------------------------------------------------------");
-        System.out.printf("%s\t%s\t%d\t%d\t\t%d\t\t%d\t\t%s\t%s\n", id, licensePlate, carType.getSeat(),
-                carType.getOpenPrice(), carType.getPriceUnder30(), carType.getPriceUpper30(),
-                insuranceExpiryDate, registrationExpiryDate);
+        System.out.printf("%s\t%s\t%d\t%d\t\t%d\t\t%d\t\t%s\t%s\n",
+                id, licensePlate,
+                carType.getSeat(),
+                carType.getOpenPrice(),
+                carType.getPriceUnder30(),
+                carType.getPriceUpper30(),
+                insuranceExpiryDate,
+                registrationExpiryDate);
     }
 
 

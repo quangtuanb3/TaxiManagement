@@ -1,7 +1,8 @@
 package models;
 
-public abstract class Person {
+import java.io.Serializable;
 
+public abstract class Person implements Serializable {
     private int id;
     private String name;
     private String email;
@@ -60,5 +61,14 @@ public abstract class Person {
         this.phoneNumber = phoneNumber;
     }
 
-
+    @Override
+    public String toString() {
+        return "Person{" +
+                "id=" + id +
+                ", name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", password='" + password + '\'' +
+                ", phoneNumber='" + phoneNumber + '\'' +
+                '}';
+    }
 }

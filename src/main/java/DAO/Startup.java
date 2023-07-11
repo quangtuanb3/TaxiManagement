@@ -1,9 +1,11 @@
 package DAO;
 
-import DAO.Enum.*;
+import DAO.Enum.EAccountStatus;
+import DAO.Enum.ECarStatus;
+import DAO.Enum.ECarType;
+import DAO.Enum.EDriverStatus;
 import models.*;
 import services.*;
-import utils.Serializable;
 
 import java.sql.Date;
 import java.util.ArrayList;
@@ -17,21 +19,22 @@ public class Startup {
         if (CarService.listCars.isEmpty()) {
             initCars();
         }
+        if (ManagerService.listManagers.isEmpty()) {
+            initManager();
+        }
         if (DriverService.listDrivers.isEmpty()) {
             initDrivers();
         }
         if (ClientService.listClients.isEmpty()) {
             initClients();
         }
-        if (ManagerService.listManagers.isEmpty()) {
-            initManager();
-        }
         if (RideService.listRides.isEmpty()) {
             initRide();
         }
         CarService.listCars.get(0).setDriver(DriverService.listDrivers.get(0));
         CarService.listCars.get(1).setDriver(DriverService.listDrivers.get(1));
-        Serializable.serialize(CarService.listCars, EPath.CARS.getFilePath());
+
+        CarService.save();
     }
 
     private static void initCars() {
@@ -41,7 +44,7 @@ public class Startup {
         listCars.add(car1);
         listCars.add(car2);
         CarService.listCars = listCars;
-        Serializable.serialize(listCars, EPath.CARS.getFilePath());
+        CarService.save();
     }
 
     private static void initDrivers() {
@@ -56,7 +59,7 @@ public class Startup {
         listDrivers.add(driver1);
         listDrivers.add(driver2);
         DriverService.listDrivers = listDrivers;
-        Serializable.serialize(listDrivers, EPath.DRIVERS.getFilePath());
+        DriverService.save();
     }
 
     private static void initClients() {
@@ -68,8 +71,7 @@ public class Startup {
         clientList.add(client1);
         clientList.add(client2);
         ClientService.listClients = clientList;
-        Serializable.serialize(clientList, EPath.CLIENTS.getFilePath());
-
+        ClientService.save();
 
     }
 
@@ -78,18 +80,19 @@ public class Startup {
         List<Manager> listManagers = new ArrayList<>();
         listManagers.add(manager);
         ManagerService.listManagers = listManagers;
-        Serializable.serialize(listManagers, EPath.MANAGERS.getFilePath());
+        ManagerService.save();
+
     }
 
     private static void initRide() {
         Ride ride1 = new Ride(1, ClientService.listClients.get(0), null, ECarType.FOUR,
                 new Location("153 Phan Bội Châu, phường Trường An, Huế, Thừa Thiên Huế"), null,
                 new Location("Laguna Lăng Cô, Phú Lộc, Thừa Thiên Huế, Việt Nam"), null, null,
-                DAO.Enum.ERideStatus.WAITING, parseDateTime("2023-07-10 19:00:00"), null, null, null, 0, null);
+                DAO.Enum.ERideStatus.WAITING, parseDateTime("2023-07-11 11:00:00"), null, null, null, 0, null);
         Ride ride2 = new Ride(2, ClientService.listClients.get(1), null, ECarType.SEVEN,
                 new Location("Ga Huế, Phường Đúc, Huế, Thừa Thiên Huế"), null,
                 new Location("Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam"), null, null,
-                DAO.Enum.ERideStatus.WAITING, parseDateTime("2023-07-10 19:00:00"), null, null, null, 0, null);
+                DAO.Enum.ERideStatus.WAITING, parseDateTime("2023-07-11 11:00:00"), null, null, null, 0, null);
 
         List<Ride> listRides = new ArrayList<>();
         listRides.add(ride1);
@@ -97,7 +100,8 @@ public class Startup {
         RideService.listRides = listRides;
         RideService.waitingRides = listRides;
 
-        Serializable.serialize(listRides, EPath.RIDES.getFilePath());
+        RideService.save();
+
     }
 
 }

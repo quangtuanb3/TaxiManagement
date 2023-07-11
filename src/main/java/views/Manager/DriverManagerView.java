@@ -5,14 +5,12 @@ import models.Driver;
 import services.DriverService;
 import utils.AppUtils;
 
-import java.io.IOException;
-
 import static views.Manager.MangerView.managerMenu;
 
 public class DriverManagerView {
     static DriverService driverService = new DriverService();
 
-    public static void driverMangerMenu() throws IOException {
+    public static void driverMangerMenu() {
         int choice;
         do {
             System.out.println("Driver manager menu");
@@ -48,16 +46,6 @@ public class DriverManagerView {
     }
 
     private static void updateDriverUi() {
-//        this.id = ++currentId;
-//        this.model = model;
-//        this.licensePlate = licensePlate;
-//        this.seats = seats;
-//        this.price = price;
-//        this.waitPrice = waitPrice;
-//        this.insuranceExpiryDate = insuranceExpiryDate;
-//        this.registrationExpiryDate = registrationExpiryDate;
-//        this.driver = driver;
-//        this.status = status;
 
     }
 

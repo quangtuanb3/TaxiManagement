@@ -56,6 +56,18 @@
             <artifactId>mail</artifactId>
             <version>1.4.7</version>
         </dependency>
+        <dependency>
+            <groupId>com.twilio.sdk</groupId>
+            <artifactId>twilio</artifactId>
+            <version>8.17.0</version>
+        </dependency>
+        <!-- https://mvnrepository.com/artifact/com.vonage/client -->
+        <dependency>
+            <groupId>com.vonage</groupId>
+            <artifactId>client</artifactId>
+            <version>6.4.0</version>
+        </dependency>
+
 
     </dependencies>
 

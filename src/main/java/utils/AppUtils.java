@@ -9,6 +9,7 @@ import java.time.Duration;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.util.List;
 import java.util.Scanner;
 
 import static utils.Constant.DATE_TIME_FORMATTER;
@@ -124,6 +125,10 @@ public class AppUtils {
         Duration duration = Duration.between( startTime, endTime);
         return (int) duration.toMinutes();
     }
+    public static int getNextId(List<Integer> integerList){
+        return integerList.stream().max(Integer::compareTo).orElse(0) + 1;
+    }
+
 }
 
 

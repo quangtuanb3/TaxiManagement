@@ -102,11 +102,11 @@ public class Ride implements Serializable {
     }
 
     public Double getExpectedDistance() {
-        return DistanceCalculator.getDistance(pickupLocation.getAddress(), expectedDestination.getAddress());
+        return DistanceCalculator.calculateDistance(pickupLocation.getAddress(), expectedDestination.getAddress());
     }
 
     public Double getActualDistance() {
-        return DistanceCalculator.getDistance(pickupLocation.getAddress(), actualDestination.getAddress());
+        return DistanceCalculator.calculateDistance(pickupLocation.getAddress(), actualDestination.getAddress());
     }
 
     public Client getClient() {
@@ -224,5 +224,9 @@ public class Ride implements Serializable {
             }
         }
         return max + 1;
+    }
+
+    public boolean isConfirmed() {
+        return this.status.equals(ERideStatus.CONFIRMED);
     }
 }

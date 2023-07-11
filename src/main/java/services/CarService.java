@@ -3,6 +3,7 @@ package services;
 import DAO.Enum.EPath;
 import models.Car;
 import models.Driver;
+import utils.AppUtils;
 import utils.Serializable;
 
 import java.util.List;
@@ -15,6 +16,7 @@ public class CarService implements BasicCRUD<Car> {
 
     static {
         listCars = (List<Car>) Serializable.deserialize(EPath.CARS.getFilePath());
+        int nextId = AppUtils.getNextId(listCars.stream().map(Car::getId).collect(Collectors.toList()));
     }
 
     public CarService() {
@@ -33,33 +35,45 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     @Override
+    public Car getObjById(List<Car> cars, String str) {
+        int carID = AppUtils.getInt(str);
+        return cars.stream().filter(e -> e.getId() == carID).findFirst().orElse(null);
+    }
+
+    @Override
     public List<Car> getAll() {
         return listCars;
     }
 
     @Override
-    public void create(Car car) {
+    public boolean create(Car car) {
+        if (listCars.stream().anyMatch(e -> e.getLicensePlate().equals(car.getLicensePlate()))) {
+            return false;
+        }
         listCars.add(car);
         save();
+        return true;
     }
 
     @Override
     public void update(Car car) {
-        for (int i = 0; i < listCars.size(); i++) {
-            Car existingCar = listCars.get(i);
-            if (existingCar.getId() == car.getId()) {
-                listCars.set(i, car);
-                break;
-            }
-        }
+        listCars.stream()
+                .filter(e -> e.getId() == car.getId())
+                .findFirst()
+                .ifPresent(e -> {
+                    int i = listCars.indexOf(e);
+                    listCars.set(i, car);
+                    save();
+                });
     }
+
 
     public static void save() {
         Serializable.serialize(listCars, EPath.CARS.getFilePath());
     }
 
     @Override
-    public boolean isExist( int carId) {
+    public boolean isExist(int carId) {
         Car car = listCars.stream()
                 .filter(e -> Objects.equals(e.getId(), carId))
                 .findFirst()

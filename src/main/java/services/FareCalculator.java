@@ -11,7 +11,6 @@ public class FareCalculator {
     }
 
     public Double firstCalculateFare(Ride ride) {
-        expectedDistance = DistanceCalculator.calculateDistance(ride.getPickupLocation().getAddress(), ride.getExpectedDestination().getAddress());
         if (expectedDistance <= 30) {
             return expectedDistance * ride.getCarType().getPriceUnder30()
                     + ride.getCarType().getOpenPrice() + ride.getExpectedWaitTime()

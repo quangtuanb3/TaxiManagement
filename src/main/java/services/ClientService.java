@@ -2,7 +2,7 @@ package services;
 
 import DAO.Enum.EPath;
 import models.Client;
-import services.authServices.LoginService;
+import utils.AppUtils;
 import utils.Serializable;
 
 import java.util.List;
@@ -11,12 +11,19 @@ import java.util.stream.Collectors;
 
 public class ClientService implements BasicCRUD<Client> {
     public static List<Client> listClients;
+    private static ClientService instance;
+
+    public static ClientService getInstance() {
+        if (instance == null) {
+            instance = new ClientService();
+        }
+        return instance;
+    }
+
     public static Client currentClient;
+
     static {
         listClients = (List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath());
-        if (LoginService.currentUser instanceof Client) {
-            currentClient = (Client) LoginService.currentUser;
-        }
     }
 
     public ClientService() {
@@ -33,6 +40,12 @@ public class ClientService implements BasicCRUD<Client> {
         return foundClient;
     }
 
+    @Override
+    public Client getObjById(List<Client> clients, String str) {
+        int carID = AppUtils.getInt(str);
+        return clients.stream().filter(e -> e.getId() == carID).findFirst().orElse(null);
+    }
+
     public static Client getByEmail(String email) {
         return listClients.stream()
                 .filter(e -> e.getEmail().equals(email))
@@ -46,8 +59,13 @@ public class ClientService implements BasicCRUD<Client> {
     }
 
     @Override
-    public void create(Client client) {
+    public boolean create(Client client) {
+        if (listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))||DriverService.listDrivers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail())) ) {
+            return false;
+        }
         listClients.add(client);
+        save();
+        return true;
     }
 
     @Override
@@ -62,7 +80,7 @@ public class ClientService implements BasicCRUD<Client> {
     }
 
     @Override
-    public boolean isExist( int clientId) {
+    public boolean isExist(int clientId) {
         Client client = listClients.stream()
                 .filter(e -> Objects.equals(e.getId(), clientId))
                 .findFirst()
@@ -83,6 +101,7 @@ public class ClientService implements BasicCRUD<Client> {
             System.out.println(client.toString());
         }
     }
+
     public static void save() {
         Serializable.serialize(listClients, EPath.CLIENTS.getFilePath());
     }

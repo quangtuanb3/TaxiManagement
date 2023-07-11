@@ -4,10 +4,11 @@ import java.util.List;
 
 public interface BasicCRUD<T> {
     T getById(int id);
+    T getObjById(List<T> tList, String str);
 
     List<T> getAll();
 
-    void create(T obj);
+    boolean create(T obj);
 
     void update(T obj);
 

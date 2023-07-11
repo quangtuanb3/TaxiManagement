@@ -4,11 +4,9 @@ import DAO.Enum.ECarType;
 import DAO.Enum.EDriverStatus;
 import DAO.Enum.EPath;
 import DAO.Enum.ERideStatus;
-import models.Client;
 import models.Driver;
 import models.Location;
 import models.Ride;
-import services.authServices.LoginService;
 import utils.Serializable;
 
 import java.time.LocalDateTime;
@@ -22,16 +20,42 @@ import static utils.AppUtils.getDuration;
 
 public class RideService implements BasicCRUD<Ride> {
     public static List<Ride> listRides;
+    public static List<Ride> waitingRides;
+
     static {
         listRides = (List<Ride>) Serializable.deserialize(EPath.RIDES.getFilePath());
-
+        availableRides = waitingRides.stream()
+                .filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 60)
+                .filter(e -> e.getCarType().equals(DriverService.currentDriver.getCar().getCarType()))
+                .collect(Collectors.toList());
     }
+
+    private static RideService instance;
+
+    public static RideService getInstance() {
+        if (instance == null) {
+            instance = new RideService();
+        }
+        return instance;
+    }
+    public  static List<Ride> availableRides;
     public static List<Driver> availableDriver;
-    public static List<Ride> waitingRides;
+
     public static Ride currentRide;
     public static FareCalculator fareCalculator = new FareCalculator();
 
     public RideService() {
+    }
+
+    public static void save() {
+        Serializable.serialize(listRides, EPath.RIDES.getFilePath());
+    }
+
+    public static boolean checkBeforeCancel() {
+        if (currentRide.isWaitApprove()) {
+            return true;
+        }
+        return currentRide.isConfirmed();
     }
     @Override
     public List<Ride> getAll() {
@@ -39,13 +63,14 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     @Override
-    public void create(Ride ride) {
+    public boolean create(Ride ride) {
         listRides.add(ride);
+        return true;
     }
 
     public Ride bookRide(Location pickupLocation, Location expectedDestination, ECarType eCarType, LocalDateTime expectedPickupTime, int expectedWaitTime) {
         try {
-            Ride ride = new Ride((Client) LoginService.currentUser, eCarType, pickupLocation, expectedDestination, null, expectedPickupTime, expectedWaitTime);
+            Ride ride = new Ride(ClientService.currentClient, eCarType, pickupLocation, expectedDestination, null, expectedPickupTime, expectedWaitTime);
             Double fare = fareCalculator.firstCalculateFare(ride);
             ride.setFare(fare);
             currentRide = ride;
@@ -148,22 +173,17 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static void printAvailableRides() {
-        List<Ride> availableRides = waitingRides.stream()
-                .filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 60)
-                .collect(Collectors.toList())
-                .stream()
-                .filter(e -> e.getCarType().equals(DriverService.currentDriver.getCar().getCarType()))
-                .collect(Collectors.toList());
-
-        System.out.println("ID\tName\t\tPickup\t\t\tDestination\t\tFare");
-        System.out.println("----------------------------------------------------------");
+        System.out.println("ID\tClient Name\t\tPickup Location\t\t\t\t\t\t\tDestination\t\t\t\t\t\tDistance\t\t\tWait Time In Trip\t\tFare");
+        System.out.println("--------------------------------------------------------------------------------------------------------------------------");
         autoDeclineRide();
         for (Ride ride : availableRides) {
-            System.out.printf("%s\t%s\t\t%s\t%s\t\t%.2f%n",
+            System.out.printf("%s \t %s\t\t %s\t %s\t\t %2f\t\t %d\t %.2f \n",
                     ride.getId(),
                     ride.getClient().getName(),
                     ride.getPickupLocation().getAddress(),
                     ride.getExpectedDestination().getAddress(),
+                    ride.getExpectedDistance(),
+                    ride.getExpectedWaitTime(),
                     ride.getFare());
         }
     }

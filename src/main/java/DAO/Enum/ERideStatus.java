@@ -5,5 +5,6 @@ public enum ERideStatus {
     CONFIRMED,
     ONGOING,
     COMPLETED,
-    DECLINE, CANCELLED
+    DECLINE,
+    CANCELLED;
 }

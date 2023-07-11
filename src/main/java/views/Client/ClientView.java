@@ -1,18 +1,17 @@
 package views.Client;
 
 import DAO.Enum.ECarType;
-import models.Client;
+import models.Distance;
 import models.Location;
 import models.Ride;
 import services.ClientService;
 import services.RideService;
-import services.authServices.LoginService;
 import utils.AppUtils;
+import utils.DistanceCalculator;
 import utils.ListView;
 
 import java.time.LocalDateTime;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 import static views.LoginView.loginMenu;
 
@@ -53,7 +52,7 @@ public class ClientView {
         switch (choice) {
             case 1:
                 String name = AppUtils.getString("Input new name:");
-                LoginService.currentUser.setName(name);
+                ClientService.currentClient.setName(name);
                 break;
             case 2:
                 String password;
@@ -62,11 +61,11 @@ public class ClientView {
                     password = AppUtils.getString("Input new password:");
                     confirmPassword = AppUtils.getString("Input confirm password:");
                 } while (!Objects.equals(password, confirmPassword));
-                LoginService.currentUser.setPassword(password);
+                ClientService.currentClient.setPassword(password);
                 break;
             case 3:
                 String phone = AppUtils.getString("Input new phone number:");
-                LoginService.currentUser.setName(phone);
+                ClientService.currentClient.setName(phone);
                 break;
             case 0:
                 System.out.println("Back to Login menu");
@@ -74,20 +73,25 @@ public class ClientView {
                 break;
 
         }
-        clientService.update((Client) LoginService.currentUser);
+        clientService.update(ClientService.currentClient);
     }
 
     private static void cancelRideUi() {
         System.out.println(RideService.currentRide.toString());
-        int rideId = AppUtils.getInt("Input ride id: ");
-        if (!rideService.isInList(RideService.listRides.stream().filter(Ride::isWaitApprove).collect(Collectors.toList()), rideId)) {
-            System.out.printf("Not found %d.\n", rideId);
-            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back to preview menu", 0, 1);
-            if (choice == 1) {
-                cancelRideUi();
-            } else clientMenu();
+        if (RideService.checkBeforeCancel()) {
+            int rideId = AppUtils.getInt("Please input Ride Id to cancel:");
+            if (RideService.currentRide.getId() != rideId) {
+                System.out.printf("Not found %d.\n", rideId);
+                int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back to preview menu", 0, 1);
+                if (choice == 1) {
+                    cancelRideUi();
+                } else clientMenu();
+            }
+            rideService.cancelRide(rideId);
+        } else {
+            System.out.println("You just need to end this trip!");
+            clientMenu();
         }
-        rideService.cancelRide(rideId);
     }
 
     public static void bookRideUi() {
@@ -95,19 +99,19 @@ public class ClientView {
             System.out.println("You are already booked a ride. Please come back late");
             return;
         }
-        String departAddress = AppUtils.getString("Input depart: ");
-        String arriverAddress = AppUtils.getString("Input destination: ");
+        Distance distance = DistanceCalculator.getDistance("Input depart: ", "Input destination: ");
         LocalDateTime pickupTime = AppUtils.getDateTime("Input pickup time");
         int expectedWaitTime = AppUtils.getIntWithBound("Input expected wait time", 10, 1000);
         int carType = AppUtils.getIntWithBound("Input Car type (1.Four seats/2.Seven seats)", 1, 2);
-        Ride ride = rideService.bookRide(new Location(departAddress), new Location(arriverAddress), carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
+        Ride ride = rideService.bookRide(new Location(distance.getDepart()), new Location(distance.getArrive()), carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
         System.out.println("Confirm your ride: ");
         int choice = AppUtils.getIntWithBound("Press 1 to book ride or 0 to back preview menu", 0, 1);
         if (choice == 0) {
             bookRideUi();
         } else {
             rideService.create(ride);
-            System.out.println("Ride is booked successful");
+            System.out.println("Ride is booked successful!!");
+            clientMenu();
         }
 
     }

@@ -1,5 +1,7 @@
 package utils;
 
+
+import models.Distance;
 import org.apache.commons.io.IOUtils;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -13,7 +15,7 @@ import java.nio.charset.StandardCharsets;
 import static utils.AppUtils.round;
 
 public class DistanceCalculator {
-    public static double calculateDistance(String depart, String arrive) {
+    public static Double calculateDistance(String depart, String arrive) {
         String fromAddress = depart.replace(" ", "%20").replace(",", "%2C");
         String toAddress = arrive.replace(" ", "%20").replace(",", "%2C");
         // Construct the API URL
@@ -21,6 +23,7 @@ public class DistanceCalculator {
                 "?key=" + Constant.API_KEY +
                 "&from=" + fromAddress +
                 "&to=" + toAddress;
+        System.out.println(apiUrl);
         try {
             HttpGet httpGet = new HttpGet(apiUrl);
             HttpClient client = HttpClients.createDefault();
@@ -34,17 +37,18 @@ public class DistanceCalculator {
             return round(Double.parseDouble(result) * 1.6);
 
         } catch (Exception e) {
-            throw new RuntimeException(e);
+            throw new RuntimeException("Invalid Location. Please try again");
         }
     }
 
-    public static double getDistance(String str1, String str2) {
+    public static Distance getDistance(String str1, String str2) {
         try {
             String depart = AppUtils.getString(str1);
             String arrive = AppUtils.getString(str2);
-            return calculateDistance(depart, arrive);
+            Double distance = calculateDistance(depart, arrive);
+            return new Distance(depart, arrive, distance);
         } catch (Exception e) {
-            System.out.println("Input invalid");
+            System.out.println(e.getMessage());
             return getDistance(str1, str2);
         }
     }
