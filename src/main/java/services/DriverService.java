@@ -1,6 +1,6 @@
 package services;
 
-import DAO.Enum.EPath;
+import Data.Enum.EPath;
 import models.Driver;
 import models.Ride;
 import utils.AppUtils;
@@ -33,21 +33,21 @@ public class DriverService implements BasicCRUD<Driver> {
 
 
     @Override
-    public Driver getById(int id) {
-        Driver foundDriver = new Driver();
-        for (Driver driver : listDrivers) {
-            if (driver.getId() == id) {
-                foundDriver = driver;
-            }
+    public Driver getById(String str) {
+        int driverId = AppUtils.getInt(str);
+        Driver driver = listDrivers.stream().filter(e -> e.getId() == driverId).findFirst().orElse(null);
+        if (driver == null) {
+            System.out.println("Driver not found. Please try again!");
+            getById(str);
         }
-        return foundDriver;
+        return driver;
     }
 
     @Override
-    public Driver getObjById(List<Driver> drivers, String str) {
-        int carID = AppUtils.getInt(str);
-        return drivers.stream().filter(e -> e.getId() == carID).findFirst().orElse(null);
+    public Driver getById(int id) {
+        return listDrivers.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
     }
+
 
     @Override
     public List<Driver> getAll() {

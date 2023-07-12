@@ -25,6 +25,13 @@ public class ListView {
             "1. Edit Model", "2. Edit license plate number", "3. Edit insurance expiry date",
             "4. Edit registration expiry date", "0. Back to Cars manager menu "
     );
+    public static List<String> rideManagerMenuList = Arrays.asList(
+            "Ride Manager Menu",
+            "1. Print rides",
+            "2. Get all rides in date",
+            "3. Get all rides in month",
+            "4. Get all rides in year",
+            "0. Back to main menu");
 
     public static void printMenu(List<String> menu) {
         for (String str : menu) {

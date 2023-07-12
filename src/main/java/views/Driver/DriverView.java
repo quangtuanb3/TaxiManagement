@@ -23,6 +23,7 @@ public class DriverView {
             case 1:
 //                "1. Approve ride"
                 System.out.println(ListView.driverMenuList.get(1));
+                RideService.autoDeclineRide();
                 ApproveRideUi();
                 break;
             case 2:

@@ -1,8 +1,7 @@
 package views.Client;
 
-import DAO.Enum.ECarType;
+import Data.Enum.ECarType;
 import models.Distance;
-import models.Location;
 import models.Ride;
 import services.ClientService;
 import services.RideService;
@@ -24,17 +23,19 @@ public class ClientView {
         int choice = AppUtils.getIntWithBound("Input choice: ", 0, 6);
         switch (choice) {
             case 1:
-                bookRideUi();
-                clientMenu();
+                bookRideUI();
+
                 break;
             case 2:
-                cancelRideUi();
+                cancelRideUI();
+
                 break;
             case 3:
                 rideService.getRideDetail();
+
                 break;
             case 4:
-                rideService.print();
+//                rideService.print();
                 break;
             case 5:
                 updateUi();
@@ -44,6 +45,7 @@ public class ClientView {
                 loginMenu();
                 break;
         }
+        clientMenu();
     }
 
     private static void updateUi() {
@@ -76,25 +78,34 @@ public class ClientView {
         clientService.update(ClientService.currentClient);
     }
 
-    private static void cancelRideUi() {
-        System.out.println(RideService.currentRide.toString());
+    private static void cancelRideUI() {
+        if (RideService.currentRide == null) {
+            System.out.println("There is no ride.");
+            return;
+        }
+
+        System.out.println(RideService.currentRide);
+
         if (RideService.checkBeforeCancel()) {
             int rideId = AppUtils.getInt("Please input Ride Id to cancel:");
-            if (RideService.currentRide.getId() != rideId) {
-                System.out.printf("Not found %d.\n", rideId);
-                int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back to preview menu", 0, 1);
+            if (rideService.cancelRide(rideId)) {
+                System.out.println("Your ride has been cancelled!");
+            } else {
+                System.out.printf("Ride with ID %d not found.\n", rideId);
+                int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to go back to the previous menu", 0, 1);
                 if (choice == 1) {
-                    cancelRideUi();
-                } else clientMenu();
+                    cancelRideUI();
+                } else {
+                    clientMenu();
+                }
             }
-            rideService.cancelRide(rideId);
         } else {
             System.out.println("You just need to end this trip!");
             clientMenu();
         }
     }
-
-    public static void bookRideUi() {
+    public static void bookRideUI() {
+        RideService.autoDeclineRide();
         if (RideService.currentRide != null) {
             System.out.println("You are already booked a ride. Please come back late");
             return;
@@ -103,11 +114,11 @@ public class ClientView {
         LocalDateTime pickupTime = AppUtils.getDateTime("Input pickup time");
         int expectedWaitTime = AppUtils.getIntWithBound("Input expected wait time", 10, 1000);
         int carType = AppUtils.getIntWithBound("Input Car type (1.Four seats/2.Seven seats)", 1, 2);
-        Ride ride = rideService.bookRide(new Location(distance.getDepart()), new Location(distance.getArrive()), carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
+        Ride ride = rideService.bookRide(distance, carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
         System.out.println("Confirm your ride: ");
         int choice = AppUtils.getIntWithBound("Press 1 to book ride or 0 to back preview menu", 0, 1);
         if (choice == 0) {
-            bookRideUi();
+            bookRideUI();
         } else {
             rideService.create(ride);
             System.out.println("Ride is booked successful!!");

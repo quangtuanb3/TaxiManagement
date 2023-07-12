@@ -23,7 +23,6 @@ public class DistanceCalculator {
                 "?key=" + Constant.API_KEY +
                 "&from=" + fromAddress +
                 "&to=" + toAddress;
-        System.out.println(apiUrl);
         try {
             HttpGet httpGet = new HttpGet(apiUrl);
             HttpClient client = HttpClients.createDefault();

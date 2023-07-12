@@ -15,5 +15,7 @@ public class Constant {
     public static String EMAIL = "codegym.taxi@gmail.com";
     public static String PASSWORD = "Tuan789@";
 
+    public static int MAX_RANGE = 50;
+
 
 }

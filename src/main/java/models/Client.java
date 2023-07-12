@@ -1,10 +1,11 @@
 package models;
 
-import DAO.Enum.EAuth;
+import Data.Enum.EAuth;
 
 import java.io.Serializable;
 
 public class Client extends Person implements Serializable {
+//    private static final long serialVersionUID = 30552339966L;
     static final String auth = EAuth.CLIENT.getAuth();
 
     public Client(String name, String email, String password, String phoneNumber) {

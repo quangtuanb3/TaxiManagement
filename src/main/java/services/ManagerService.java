@@ -1,6 +1,6 @@
 package services;
 
-import DAO.Enum.EPath;
+import Data.Enum.EPath;
 import models.Manager;
 import utils.Serializable;
 

@@ -1,9 +1,13 @@
-import static utils.DistanceCalculator.calculateDistance;
+import services.CarService;
 
 public class Test {
 
 
     public static void main(String[] args) {
-        calculateDistance("adfasdg", "adfasdf");
+//        init();
+        System.out.println(CarService.listCars.get(0).toString());
+
+
+
     }
 }

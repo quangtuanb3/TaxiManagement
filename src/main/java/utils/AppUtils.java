@@ -2,14 +2,16 @@ package utils;
 
 import java.nio.file.Path;
 import java.nio.file.Paths;
-import java.sql.Date;
 import java.sql.Time;
 import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.time.Duration;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.List;
+import java.util.Locale;
 import java.util.Scanner;
 
 import static utils.Constant.DATE_TIME_FORMATTER;
@@ -64,13 +66,28 @@ public class AppUtils {
         }
     }
 
-    public static Date getDate(String str) {
+    public static LocalDate getDate(String str) {
         try {
-            System.out.println("Please enter date with format YYYY-MM-DD");
-            return Date.valueOf(getString(str));
+            System.out.println("Please enter date with format yyyy-mm-dd");
+            return LocalDate.parse(getString(str));
         } catch (Exception e) {
             System.out.println("Invalid Date Format");
             return getDate(str);
+        }
+    }
+
+    public static LocalDate getDateWithBound(String message, LocalDate startDate, LocalDate endDate) {
+        try {
+            System.out.printf("Please enter date from %s to %s with format yyyy-mm-dd \n", startDate.toString(), endDate.toString());
+            LocalDate date = LocalDate.parse(getString(message));
+            if (date.isBefore(startDate) || date.isAfter(endDate)) {
+                System.out.println("Entered date is outside the allowed range.");
+                return getDateWithBound(message, startDate, endDate);
+            }
+            return date;
+        } catch (Exception e) {
+            System.out.println("Invalid Date Format");
+            return getDateWithBound(message, startDate, endDate);
         }
     }
 
@@ -99,11 +116,12 @@ public class AppUtils {
     public static LocalDateTime getDateTimeNow() {
         return LocalDateTime.now();
     }
+
     public static LocalDateTime getDateTime(String str) {
         try {
             LocalDateTime dateTime = LocalDateTime.parse(getString(str + " (yyyy-MM-dd HH:mm:ss):"), DATE_TIME_FORMATTER);
             LocalDateTime now = getDateTimeNow();
-            if (getDuration(now, dateTime ) < 0 || getDuration(now, dateTime) > 1440) {
+            if (getDuration(now, dateTime) < 0 || getDuration(now, dateTime) > 4320) {
                 throw new RuntimeException("Invalid Date Range. Please enter a date and time within the last 24 hours.");
             }
             return dateTime;
@@ -122,12 +140,19 @@ public class AppUtils {
     }
 
     public static int getDuration(LocalDateTime startTime, LocalDateTime endTime) {
-        Duration duration = Duration.between( startTime, endTime);
+        Duration duration = Duration.between(startTime, endTime);
         return (int) duration.toMinutes();
     }
-    public static int getNextId(List<Integer> integerList){
+
+    public static int getNextId(List<Integer> integerList) {
         return integerList.stream().max(Integer::compareTo).orElse(0) + 1;
     }
+    public static String covertPrice(double price) {
+        Locale localeVN = new Locale("vi", "VN");
+        NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
+        return currencyFormatter.format(price);
+    }
+
 
 }
 

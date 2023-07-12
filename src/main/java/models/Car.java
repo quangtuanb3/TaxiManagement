@@ -1,21 +1,22 @@
 package models;
 
-import DAO.Enum.ECarStatus;
-import DAO.Enum.ECarType;
+import Data.Enum.ECarStatus;
+import Data.Enum.ECarType;
 
 import java.io.Serializable;
-import java.sql.Date;
+import java.time.LocalDate;
 
 import static services.CarService.listCars;
 
 
 public class Car implements Serializable {
+//    private static final long serialVersionUID = 305523292339966L;
     private int id;
     private String model;
     private String licensePlate;
     private ECarType carType;
-    private Date registrationExpiryDate;
-    private Date insuranceExpiryDate;
+    private LocalDate registrationExpiryDate;
+    private LocalDate insuranceExpiryDate;
     Driver driver = new Driver();
     ECarStatus status = ECarStatus.USING;
 
@@ -23,7 +24,7 @@ public class Car implements Serializable {
 
     }
 
-    public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate, Driver driver, ECarStatus status) {
+    public Car(String model, String licensePlate, ECarType carType, LocalDate registrationExpiryDate, LocalDate insuranceExpiryDate, Driver driver, ECarStatus status) {
         this.model = model;
         this.licensePlate = licensePlate;
         this.carType = carType;
@@ -33,7 +34,7 @@ public class Car implements Serializable {
         this.status = status;
     }
 
-    public Car(String model, String licensePlate, ECarType carType, Date registrationExpiryDate, Date insuranceExpiryDate) {
+    public Car(String model, String licensePlate, ECarType carType, LocalDate registrationExpiryDate, LocalDate insuranceExpiryDate) {
         this.model = model;
         this.licensePlate = licensePlate;
         this.carType = carType;
@@ -62,19 +63,19 @@ public class Car implements Serializable {
 
     // Getters and setters for the properties
 
-    public Date getRegistrationExpiryDate() {
+    public LocalDate getRegistrationExpiryDate() {
         return registrationExpiryDate;
     }
 
-    public void setRegistrationExpiryDate(Date registrationExpiryDate) {
+    public void setRegistrationExpiryDate(LocalDate registrationExpiryDate) {
         this.registrationExpiryDate = registrationExpiryDate;
     }
 
-    public Date getInsuranceExpiryDate() {
+    public LocalDate getInsuranceExpiryDate() {
         return insuranceExpiryDate;
     }
 
-    public void setInsuranceExpiryDate(Date insuranceExpiryDate) {
+    public void setInsuranceExpiryDate(LocalDate insuranceExpiryDate) {
         this.insuranceExpiryDate = insuranceExpiryDate;
     }
 
@@ -114,6 +115,22 @@ public class Car implements Serializable {
             }
         }
         return max + 1;
+    }
+
+    public void setCarType(ECarType carType) {
+        this.carType = carType;
+    }
+
+    public Driver getDriver() {
+        return driver;
+    }
+
+    public ECarStatus getStatus() {
+        return status;
+    }
+
+    public void setStatus(ECarStatus status) {
+        this.status = status;
     }
 
     public int getId() {

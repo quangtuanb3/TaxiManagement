@@ -1,8 +1,8 @@
 package models;
 
-import DAO.Enum.EAccountStatus;
-import DAO.Enum.EAuth;
-import DAO.Enum.EDriverStatus;
+import Data.Enum.EAccountStatus;
+import Data.Enum.EAuth;
+import Data.Enum.EDriverStatus;
 
 import java.io.Serializable;
 
@@ -10,6 +10,7 @@ import static services.DriverService.listDrivers;
 
 
 public class Driver extends Person implements Serializable {
+//    private static final long serialVersionUID = 305523292337966L;
     private Ride currentRide;
     private Car car;
     private EDriverStatus driverStatus = EDriverStatus.AVAILABLE;
@@ -31,7 +32,7 @@ public class Driver extends Person implements Serializable {
 
     }
 
-    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, EDriverStatus driverStatus, EAccountStatus accountStatus) {
+    public Driver(String name, String email, String password, String phoneNumber, Car car, int salary, EDriverStatus driverStatus, EAccountStatus accountStatus, Location location) {
         super(name, email, password, phoneNumber);
         this.car = car;
         this.salary = salary;

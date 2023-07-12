@@ -1,6 +1,6 @@
 package services;
 
-import DAO.Enum.EPath;
+import Data.Enum.EPath;
 import models.Client;
 import utils.AppUtils;
 import utils.Serializable;
@@ -30,21 +30,21 @@ public class ClientService implements BasicCRUD<Client> {
     }
 
     @Override
-    public Client getById(int id) {
-        Client foundClient = new Client();
-        for (Client client : listClients) {
-            if (client.getId() == id) {
-                foundClient = client;
-            }
+    public Client getById(String str) {
+        int clientId = AppUtils.getInt(str);
+        Client client = listClients.stream().filter(e -> e.getId() == clientId).findFirst().orElse(null);
+        if (client == null) {
+            System.out.println("Client not found. Please try again!");
+            getById(str);
         }
-        return foundClient;
+        return client;
     }
 
     @Override
-    public Client getObjById(List<Client> clients, String str) {
-        int carID = AppUtils.getInt(str);
-        return clients.stream().filter(e -> e.getId() == carID).findFirst().orElse(null);
+    public Client getById(int id) {
+        return  listClients.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
     }
+
 
     public static Client getByEmail(String email) {
         return listClients.stream()
@@ -60,7 +60,7 @@ public class ClientService implements BasicCRUD<Client> {
 
     @Override
     public boolean create(Client client) {
-        if (listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))||DriverService.listDrivers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail())) ) {
+        if (listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail())) || DriverService.listDrivers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))) {
             return false;
         }
         listClients.add(client);

@@ -1,6 +1,7 @@
 package services;
 
-import DAO.Enum.EPath;
+import Data.Enum.ECarStatus;
+import Data.Enum.EPath;
 import models.Car;
 import models.Driver;
 import utils.AppUtils;
@@ -24,21 +25,21 @@ public class CarService implements BasicCRUD<Car> {
 
 
     @Override
-    public Car getById(int id) {
-        Car foundCar = new Car();
-        for (Car car : listCars) {
-            if (car.getId() == id) {
-                foundCar = car;
-            }
+    public Car getById(String str) {
+        int carID = AppUtils.getInt(str);
+        Car car = listCars.stream().filter(e -> e.getId() == carID).findFirst().orElse(null);
+        if (car == null) {
+            System.out.println("Car not found. Please try again!");
+            getById(str);
         }
-        return foundCar;
+        return car;
     }
 
     @Override
-    public Car getObjById(List<Car> cars, String str) {
-        int carID = AppUtils.getInt(str);
-        return cars.stream().filter(e -> e.getId() == carID).findFirst().orElse(null);
+    public Car getById(int id) {
+        return listCars.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
     }
+
 
     @Override
     public List<Car> getAll() {
@@ -89,14 +90,31 @@ public class CarService implements BasicCRUD<Car> {
         save();
     }
 
-    public void print() {
+    public void printAvailableCar() {
+        for (Car car : listCars.stream().filter(e -> e.getStatus() != ECarStatus.USED).collect(Collectors.toList())) {
+            System.out.println(car.toString());
+        }
+    }
+
+    public void printAll(){
         for (Car car : listCars) {
             System.out.println(car.toString());
         }
     }
 
-    public void assignCarToDriver(Car car, Driver driver) {
-        car.setDriver(driver);
-        update(car);
+    public boolean assignCarToDriver(Car car, Driver driver) {
+        Driver oldDriver = car.getDriver();
+        if (oldDriver != null && oldDriver != driver) {
+            System.out.printf("This car has already assigned to %s (Driver Id: %d) \n", oldDriver.getName(), oldDriver.getId());
+            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back preview menu", 0, 1);
+            if (choice == 1) {
+                oldDriver.setCar(null);
+                car.setDriver(driver);
+                update(car);
+                DriverService.getInstance().update(oldDriver);
+                return true;
+            }
+        }
+        return false;
     }
 }
