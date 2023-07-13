@@ -1,7 +1,14 @@
 package utils;
 
+import models.Password;
+
+import javax.crypto.SecretKeyFactory;
+import javax.crypto.spec.PBEKeySpec;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.security.NoSuchAlgorithmException;
+import java.security.SecureRandom;
+import java.security.spec.InvalidKeySpecException;
 import java.sql.Time;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
@@ -10,9 +17,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.List;
-import java.util.Locale;
-import java.util.Scanner;
+import java.util.*;
 
 import static utils.Constant.DATE_TIME_FORMATTER;
 
@@ -122,7 +127,7 @@ public class AppUtils {
             LocalDateTime dateTime = LocalDateTime.parse(getString(str + " (yyyy-MM-dd HH:mm:ss):"), DATE_TIME_FORMATTER);
             LocalDateTime now = getDateTimeNow();
             if (getDuration(now, dateTime) < 0 || getDuration(now, dateTime) > 4320) {
-                throw new RuntimeException("Invalid Date Range. Please enter a date and time within the last 24 hours.");
+                throw new RuntimeException("Invalid Date Range. Please enter a date and time within the last 72 hours.");
             }
             return dateTime;
         } catch (DateTimeParseException e) {
@@ -147,13 +152,56 @@ public class AppUtils {
     public static int getNextId(List<Integer> integerList) {
         return integerList.stream().max(Integer::compareTo).orElse(0) + 1;
     }
+
     public static String covertPrice(double price) {
         Locale localeVN = new Locale("vi", "VN");
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
         return currencyFormatter.format(price);
     }
 
+//Pass here:
+    // 3 Constant: trong lop Constant
+    // Tao lop Password để luu 2 giá trị passcode và key
+    // Chinh sua 1 tý ở login service là xong!
+    public static Password hashPassword(String password) {
+        byte[] salt = generateSalt();
+        byte[] hash = generateHash(password, salt);
+        String encodedSaltAndHash = encodeSaltAndHash(salt, hash);
+        return new Password(salt, encodedSaltAndHash);
+    }
 
+    public static String hashPassword(String password, byte[] salt) {
+        byte[] hash = generateHash(password, salt);
+        return encodeSaltAndHash(salt, hash);
+    }
+
+    private static byte[] generateSalt() {
+        SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[Constant.SALT_LENGTH];
+        random.nextBytes(salt);
+        return salt;
+    }
+
+    private static byte[] generateHash(String password, byte[] salt) {
+        try {
+            PBEKeySpec spec = new PBEKeySpec(password.toCharArray(), salt, Constant.ITERATIONS, Constant.KEY_LENGTH);
+            SecretKeyFactory skf = SecretKeyFactory.getInstance("PBKDF2WithHmacSHA1");
+            return skf.generateSecret(spec).getEncoded();
+        } catch (NoSuchAlgorithmException | InvalidKeySpecException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
+
+    private static String encodeSaltAndHash(byte[] salt, byte[] hash) {
+        byte[] saltAndHash = new byte[salt.length + hash.length];
+        System.arraycopy(salt, 0, saltAndHash, 0, salt.length);
+        System.arraycopy(hash, 0, saltAndHash, salt.length, hash.length);
+        return Base64.getEncoder().encodeToString(saltAndHash);
+    }
 }
+
+
+
 
 

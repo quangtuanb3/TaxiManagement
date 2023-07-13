@@ -45,6 +45,7 @@ public class Startup {
 
     private static void initCars() {
         Car car1 = new Car();
+        car1.setId(1);
         car1.setModel("A584");
         car1.setLicensePlate("75A-19836");
         car1.setCarType(ECarType.FOUR);
@@ -53,6 +54,7 @@ public class Startup {
         car1.setStatus(ECarStatus.USING);
 
         Car car2 = new Car();
+        car2.setId(2);
         car2.setModel("V234");
         car2.setLicensePlate("75A-66472");
         car2.setCarType(ECarType.FOUR);
@@ -61,7 +63,8 @@ public class Startup {
         car2.setStatus(ECarStatus.USING);
 
         Car car3 = new Car();
-        car3.setModel("B664");
+        car3.setId(3);
+        car3.setModel("B694");
         car3.setLicensePlate("75A-78942");
         car3.setCarType(ECarType.FOUR);
         car3.setRegistrationExpiryDate(LocalDate.parse("2023-11-20"));
@@ -69,6 +72,7 @@ public class Startup {
         car3.setStatus(ECarStatus.USING);
 
         Car car4 = new Car();
+        car4.setId(4);
         car4.setModel("B446");
         car4.setLicensePlate("75A-26647");
         car4.setCarType(ECarType.SEVEN);
@@ -77,6 +81,7 @@ public class Startup {
         car4.setStatus(ECarStatus.USING);
 
         Car car5 = new Car();
+        car5.setId(5);
         car5.setModel("B446");
         car5.setLicensePlate("75A-44679");
         car5.setCarType(ECarType.SEVEN);
@@ -85,6 +90,7 @@ public class Startup {
         car5.setStatus(ECarStatus.USING);
 
         Car car6 = new Car();
+        car6.setId(6);
         car6.setModel("A221");
         car6.setLicensePlate("75A-11233");
         car6.setCarType(ECarType.FOUR);
@@ -93,6 +99,7 @@ public class Startup {
         car6.setStatus(ECarStatus.USING);
 
         Car car7 = new Car();
+        car7.setId(7);
         car7.setModel("N4467");
         car7.setLicensePlate("75A-46467");
         car7.setCarType(ECarType.FOUR);
@@ -101,6 +108,7 @@ public class Startup {
         car7.setStatus(ECarStatus.USING);
 
         Car car8 = new Car();
+        car8.setId(8);
         car8.setModel("T4979");
         car8.setLicensePlate("75A-33654");
         car8.setCarType(ECarType.FOUR);
@@ -109,6 +117,7 @@ public class Startup {
         car8.setStatus(ECarStatus.USING);
 
         Car car9 = new Car();
+        car9.setId(9);
         car9.setModel("Y6462");
         car9.setLicensePlate("75A-99879");
         car9.setCarType(ECarType.SEVEN);
@@ -123,6 +132,7 @@ public class Startup {
     private static void initDrivers() {
 
         Driver driver1 = new Driver();
+        driver1.setId(1);
         driver1.setName("Trong Ty");
         driver1.setEmail("tythiwin@gmail.com");
         driver1.setPassword("1234");
@@ -134,6 +144,7 @@ public class Startup {
         driver1.setLocation(new Location("567 Lạc Long Quân, Thị Trấn Lăng Cô, Huyện Phú Lộc, Thừa Thiên Huế, Việt Nam"));
 
         Driver driver2 = new Driver();
+        driver2.setId(2);
         driver2.setName("Dat Zero");
         driver2.setEmail("datzero@gmail.com");
         driver2.setPassword("1234");
@@ -146,6 +157,7 @@ public class Startup {
                 "Huyện Nam Đông, Thừa Thiên Huế, Việt Nam"));
 
         Driver driver3 = new Driver();
+        driver3.setId(3);
         driver3.setName("Việt Cường");
         driver3.setEmail("vietcuong@gmail.com");
         driver3.setPassword("1234");
@@ -158,6 +170,7 @@ public class Startup {
                 "Thị xã Hương Thủy, Thừa Thiên Huế, Việt Nam"));
 
         Driver driver4 = new Driver();
+        driver4.setId(4);
         driver4.setName("Việt Anh");
         driver4.setEmail("vietanh@gmail.com");
         driver4.setPassword("1234");
@@ -169,6 +182,7 @@ public class Startup {
         driver4.setLocation(new Location("Nguyễn Đức Xuyên, Phú Đa, Phú Vang, Thừa Thiên Huế, Việt Nam"));
 
         Driver driver5 = new Driver();
+        driver5.setId(5);
         driver5.setName("Thế Anh");
         driver5.setEmail("theanh@gmail.com");
         driver5.setPassword("1234");
@@ -180,6 +194,7 @@ public class Startup {
         driver5.setLocation(new Location("01 Đ. Nguyễn Khoa Đăng, Tứ Hạ, Hương Trà, Thừa Thiên Huế 535300, Việt Nam"));
 
         Driver driver6 = new Driver();
+        driver6.setId(6);
         driver6.setName("Văn Nam");
         driver6.setEmail("vannam@gmail.com");
         driver6.setPassword("1234");
@@ -191,6 +206,7 @@ public class Startup {
         driver6.setLocation(new Location("20 Đ. Hồ Huấn Nghiệp, A Lưới, Thừa Thiên Huế, Việt Nam"));
 
         Driver driver7 = new Driver();
+        driver7.setId(7);
         driver7.setName("Lê Văn Vở");
         driver7.setEmail("vanvo1000nam@gmail.com");
         driver7.setPassword("1234");
@@ -202,6 +218,8 @@ public class Startup {
         driver7.setLocation(new Location("57 Phò Trạch, TT. Phong Điền, Phong Điền, Thừa Thiên Huế 49000, Việt Nam"));
 
         Driver driver8 = new Driver();
+        driver8.setId(8);
+
         driver8.setName("Duy Thẩm");
         driver8.setEmail("duytham@gmail.com");
         driver8.setPassword("1234");
@@ -217,25 +235,65 @@ public class Startup {
     }
 
     private static void initClients() {
-        Client client1 = new Client("Anh Tuan", "a", "1",
-                "12238584");
-        Client client2 = new Client("Si Phuc", "siphuc@gmail.com", "1234",
-                "12235858");
-        List<Client> clientList = new ArrayList<>();
-        clientList.add(client1);
-        clientList.add(client2);
-        listClients = clientList;
+        Client client1 = new Client();
+        client1.setId(1);
+        client1.setName("Anh Tuan");
+        client1.setEmail("a");
+        client1.setPassword("1");
+        client1.setPhoneNumber("0369369336");
+
+        Client client2 = new Client();
+        client2.setId(2);
+        client2.setName("John Doe");
+        client2.setEmail("johndoe@example.com");
+        client2.setPassword("password123");
+        client2.setPhoneNumber("1234567890");
+
+        Client client3 = new Client();
+        client3.setId(3);
+        client3.setName("Jane Smith");
+        client3.setEmail("janesmith@example.com");
+        client3.setPassword("password456");
+        client3.setPhoneNumber("9876543210");
+
+
+        Client client4 = new Client();
+        client4.setId(4);
+        client4.setName("Michael Johnson");
+        client4.setEmail("michael@example.com");
+        client4.setPassword("mypass123");
+        client4.setPhoneNumber("555-1234");
+
+        Client client5 = new Client();
+        client5.setId(5);
+        client5.setName("Emily Anderson");
+        client5.setEmail("emily@example.com");
+        client5.setPassword("strongPassword");
+        client5.setPhoneNumber("555-9876");
+
+        Client client6 = new Client();
+        client6.setId(6);
+        client6.setName("Alexandra Lee");
+        client6.setEmail("alexandra@example.com");
+        client6.setPassword("pass1234");
+        client6.setPhoneNumber("555-5555");
+
+        listClients = Arrays.asList(client1, client2, client3, client4, client5, client6);
         ClientService.save();
 
     }
 
     private static void initManager() {
-        Manager manager = new Manager("Quang Tuan", "tuan@gmail.com", "1234", "099999999");
+        Manager manager = new Manager();
+        manager.setId(1);
+        manager.setName("Quang Tuan");
+        manager.setEmail("tuan@gmail.com");
+        manager.setPassword("1234");
+        manager.setPhoneNumber("099999999");
         List<Manager> listManagers = new ArrayList<>();
         listManagers.add(manager);
         ManagerService.listManagers = listManagers;
         ManagerService.save();
-
     }
 
     private static void initRide() {
@@ -277,7 +335,7 @@ public class Startup {
         ride2.setBookTime(AppUtils.parseDateTime("2023-07-02 06:58:00"));
         ride2.setExpectedWaitTime(0);
         ride2.setActualWaitTime(0);
-        ride1.setDriver(DriverService.listDrivers.get(1));
+        ride2.setDriver(DriverService.listDrivers.get(1));
 
         Ride ride3 = new Ride();
         ride3.setId(3);
@@ -297,14 +355,70 @@ public class Startup {
         ride3.setEndTime(AppUtils.parseDateTime("2023-07-02 07:32:00"));
         ride3.setExpectedWaitTime(0);
         ride3.setActualWaitTime(0);
-        ride1.setDriver(DriverService.listDrivers.get(2));
+        ride3.setDriver(DriverService.listDrivers.get(2));
 
-        List<Ride> listRides = new ArrayList<>();
-        listRides.add(ride1);
-        listRides.add(ride2);
-        listRides.add(ride3);
-        RideService.listRides = listRides;
-        RideService.waitingRides = listRides.stream().filter(e->e.getStatus().equals(ERideStatus.WAITING)).collect(Collectors.toList());
+        Ride ride4 = new Ride();
+        ride4.setId(2);
+        ride4.setClient(listClients.get(1));
+        ride4.setCarType(ECarType.SEVEN);
+        ride4.setPickupLocation(new Location("45 Lê Lợi, phường Phú Hội, Huế, Thừa Thiên Huế"));
+        ride4.setActualDestination(new Location("Chùa Thiên Mụ, Phường Hương Long, Huế, Thừa Thiên Huế, Việt Nam"));
+        ride4.setExpectedDestination(new Location("Khu Di tích Hồ Chí Minh, Huế, Thừa Thiên Huế"));
+        ride4.setFare(150000D);
+        ride4.setExpectedDistance(12.3D);
+        ride4.setActualDistance(8.6D);
+        ride4.setStatus(ERideStatus.CANCELLED);
+        ride4.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-02 14:30:00"));
+        ride4.setStartTime(AppUtils.parseDateTime("2023-07-02 14:30:00"));
+        ride4.setEndTime(AppUtils.parseDateTime("2023-07-02 14:45:00"));
+        ride4.setConfirmedTime(AppUtils.parseDateTime("2023-07-02 14:33:00"));
+        ride4.setBookTime(AppUtils.parseDateTime("2023-07-02 14:32:00"));
+        ride4.setExpectedWaitTime(20);
+        ride4.setActualWaitTime(18);
+        ride4.setDriver(DriverService.listDrivers.get(3));
+
+        Ride ride5 = new Ride();
+        ride5.setId(3);
+        ride5.setClient(listClients.get(2));
+        ride5.setCarType(ECarType.FOUR);
+        ride5.setPickupLocation(new Location("10 Nguyễn Huệ, phường Phú Hội, Huế, Thừa Thiên Huế"));
+        ride5.setActualDestination(new Location("Khai Đình, Thủy Bằng, Huế, Thừa Thiên Huế, Việt Nam"));
+        ride5.setExpectedDestination(new Location("Thành cổ Huế, phường Phú Hội, Huế, Thừa Thiên Huế"));
+        ride5.setFare(180000D);
+        ride5.setExpectedDistance(10.2D);
+        ride5.setActualDistance(11.5D);
+        ride5.setStatus(ERideStatus.COMPLETED);
+        ride5.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-03 09:15:00"));
+        ride5.setStartTime(AppUtils.parseDateTime("2023-07-03 09:20:00"));
+        ride5.setEndTime(AppUtils.parseDateTime("2023-07-03 09:40:00"));
+        ride5.setConfirmedTime(AppUtils.parseDateTime("2023-07-03 09:18:00"));
+        ride5.setBookTime(AppUtils.parseDateTime("2023-07-03 09:18:00"));
+        ride5.setExpectedWaitTime(25);
+        ride5.setActualWaitTime(22);
+        ride5.setDriver(DriverService.listDrivers.get(4));
+
+        Ride ride6 = new Ride();
+        ride6.setId(6);
+        ride6.setClient(listClients.get(5));
+        ride6.setCarType(ECarType.FOUR);
+        ride6.setPickupLocation(new Location("78 Điện Biên Phủ, phường Vỹ Dạ, Huế, Thừa Thiên Huế"));
+        ride6.setActualDestination(new Location("Vườn Quốc gia Bạch Mã, Phú Lộc, Thừa Thiên Huế, Việt Nam"));
+        ride6.setExpectedDestination(new Location("Khu Di tích Đại Nội, Kim Long, Huế, Thừa Thiên Huế, Việt Nam"));
+        ride6.setFare(180000D);
+        ride6.setExpectedDistance(18.6D);
+        ride6.setActualDistance(16.9D);
+        ride6.setStatus(ERideStatus.COMPLETED);
+        ride6.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-06 10:30:00"));
+        ride6.setStartTime(AppUtils.parseDateTime("2023-07-06 10:30:00"));
+        ride6.setEndTime(AppUtils.parseDateTime("2023-07-06 11:00:00"));
+        ride6.setConfirmedTime(AppUtils.parseDateTime("2023-07-06 10:32:00"));
+        ride6.setBookTime(AppUtils.parseDateTime("2023-07-06 10:31:00"));
+        ride6.setExpectedWaitTime(20);
+        ride6.setActualWaitTime(22);
+        ride6.setDriver(DriverService.listDrivers.get(5));
+
+        RideService.listRides = Arrays.asList(ride1, ride2, ride3, ride4, ride5, ride6);
+        RideService.waitingRides = RideService.listRides.stream().filter(e -> e.getStatus().equals(ERideStatus.WAITING)).collect(Collectors.toList());
 
         RideService.save();
     }

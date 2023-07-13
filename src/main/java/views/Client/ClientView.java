@@ -2,6 +2,7 @@ package views.Client;
 
 import Data.Enum.ECarType;
 import models.Distance;
+import models.Password;
 import models.Ride;
 import services.ClientService;
 import services.RideService;
@@ -104,6 +105,7 @@ public class ClientView {
             clientMenu();
         }
     }
+
     public static void bookRideUI() {
         RideService.autoDeclineRide();
         if (RideService.currentRide != null) {

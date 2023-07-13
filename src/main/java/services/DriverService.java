@@ -15,6 +15,7 @@ public class DriverService implements BasicCRUD<Driver> {
     public static List<Driver> listDrivers;
     public static Driver currentDriver;
     private static DriverService instance;
+    private static int nextId;
 
     public static DriverService getInstance() {
         if (instance == null) {
@@ -25,7 +26,7 @@ public class DriverService implements BasicCRUD<Driver> {
 
     static {
         listDrivers = (List<Driver>) Serializable.deserialize(EPath.DRIVERS.getFilePath());
-
+        nextId = AppUtils.getNextId(listDrivers.stream().map(Driver::getId).collect(Collectors.toList()));
     }
 
     public DriverService() {
@@ -60,6 +61,7 @@ public class DriverService implements BasicCRUD<Driver> {
             System.out.println("Email has been use");
             return false;
         }
+        driver.setId(nextId);
         listDrivers.add(driver);
         save();
         return true;

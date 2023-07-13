@@ -1,8 +1,8 @@
 package views;
 
 import models.Client;
-import services.authServices.LoginService;
-import services.authServices.RegisterService;
+
+import services.AuthService;
 import utils.AppUtils;
 import utils.ListView;
 
@@ -15,7 +15,7 @@ public class LoginView {
             int choice = AppUtils.getIntWithBound("Input choice", 0, 2);
             if (choice == 0) System.exit(1);
             if (choice == 1) {
-                LoginService.login();
+                AuthService.login();
             } else {
                 register();
             }
@@ -24,6 +24,7 @@ public class LoginView {
             loginMenu();
         }
     }
+
     public static void register() {
         System.out.println("Register: ");
         String name = AppUtils.getString("Input Name");
@@ -31,13 +32,13 @@ public class LoginView {
         String password = AppUtils.getString("Input Password");
         String phoneNumber = AppUtils.getString("Input Phone number");
         Client client = new Client(name, email, password, phoneNumber);
-       if(RegisterService.register(client)){
-           System.out.println("Register successful!!");
-           loginMenu();
-       } else {
-           System.out.println("Register error!! Please try again");
-           register();
-       }
+        if (AuthService.register(client)) {
+            System.out.println("Register successful!!");
+            loginMenu();
+        } else {
+            System.out.println("Register error!! Please try again");
+            register();
+        }
     }
 }
 

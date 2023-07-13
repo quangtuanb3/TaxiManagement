@@ -1,23 +1,27 @@
 package models;
 
+import Data.Enum.EAuth;
+import utils.AppUtils;
+
 import java.io.Serializable;
 
 public abstract class Person implements Serializable {
-//    private static final long serialVersionUID = 3089966L;
+    //    private static final long serialVersionUID = 3089966L;
     private int id;
     private String name;
     private String email;
-    private String password;
+    private Password password;
     private String phoneNumber;
+    private EAuth eAuth;
 
     public Person() {
 
     }
 
-    public Person( String name, String email, String password, String phoneNumber) {
+    public Person(String name, String email, String password, String phoneNumber, EAuth eAuth) {
         this.name = name;
         this.email = email;
-        this.password = password;
+        this.password = AppUtils.hashPassword(password);
         this.phoneNumber = phoneNumber;
     }
 
@@ -46,12 +50,12 @@ public abstract class Person implements Serializable {
         this.email = email;
     }
 
-    public String getPassword() {
+    public Password getPassword() {
         return password;
     }
 
     public void setPassword(String password) {
-        this.password = password;
+        this.password = AppUtils.hashPassword(password);
     }
 
     public String getPhoneNumber() {
@@ -68,7 +72,7 @@ public abstract class Person implements Serializable {
                 "id=" + id +
                 ", name='" + name + '\'' +
                 ", email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                ", password='" + password.getPasscode() + '\'' +
                 ", phoneNumber='" + phoneNumber + '\'' +
                 '}';
     }

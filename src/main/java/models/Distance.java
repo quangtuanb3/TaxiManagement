@@ -1,6 +1,8 @@
 package models;
 
-public class Distance {
+import java.io.Serializable;
+
+public class Distance implements Serializable {
     private String depart;
     private String arrive;
     private Double distance;

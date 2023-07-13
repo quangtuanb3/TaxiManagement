@@ -10,8 +10,7 @@ import static services.CarService.listCars;
 
 
 public class Car implements Serializable {
-//    private static final long serialVersionUID = 305523292339966L;
-    private int id;
+    private  int id;
     private String model;
     private String licensePlate;
     private ECarType carType;
@@ -19,7 +18,6 @@ public class Car implements Serializable {
     private LocalDate insuranceExpiryDate;
     Driver driver = new Driver();
     ECarStatus status = ECarStatus.USING;
-
     public Car() {
 
     }
@@ -100,6 +98,9 @@ public class Car implements Serializable {
         return carType;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public void setDriver(Driver driver) {
         this.driver = driver;

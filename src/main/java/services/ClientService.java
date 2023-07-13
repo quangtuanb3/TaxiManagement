@@ -12,6 +12,7 @@ import java.util.stream.Collectors;
 public class ClientService implements BasicCRUD<Client> {
     public static List<Client> listClients;
     private static ClientService instance;
+    private static int nextId;
 
     public static ClientService getInstance() {
         if (instance == null) {
@@ -24,6 +25,7 @@ public class ClientService implements BasicCRUD<Client> {
 
     static {
         listClients = (List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath());
+        nextId = AppUtils.getNextId(listClients.stream().map(Client::getId).collect(Collectors.toList()));
     }
 
     public ClientService() {
@@ -42,7 +44,7 @@ public class ClientService implements BasicCRUD<Client> {
 
     @Override
     public Client getById(int id) {
-        return  listClients.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
+        return listClients.stream().filter(e -> e.getId() == id).findFirst().orElse(null);
     }
 
 
@@ -60,7 +62,10 @@ public class ClientService implements BasicCRUD<Client> {
 
     @Override
     public boolean create(Client client) {
-        if (listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail())) || DriverService.listDrivers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))) {
+        if (listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))
+                || DriverService.listDrivers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))
+                || ManagerService.listManagers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))
+        ) {
             return false;
         }
         listClients.add(client);

@@ -14,10 +14,11 @@ import java.util.stream.Collectors;
 
 public class CarService implements BasicCRUD<Car> {
     public static List<Car> listCars;
+    private static int nextId;
 
     static {
         listCars = (List<Car>) Serializable.deserialize(EPath.CARS.getFilePath());
-        int nextId = AppUtils.getNextId(listCars.stream().map(Car::getId).collect(Collectors.toList()));
+        nextId = AppUtils.getNextId(listCars.stream().map(Car::getId).collect(Collectors.toList()));
     }
 
     public CarService() {
@@ -51,6 +52,7 @@ public class CarService implements BasicCRUD<Car> {
         if (listCars.stream().anyMatch(e -> e.getLicensePlate().equals(car.getLicensePlate()))) {
             return false;
         }
+        car.setId(CarService.nextId);
         listCars.add(car);
         save();
         return true;

@@ -89,14 +89,14 @@ public class Ride implements Serializable {
 
     @Override
     public String toString() {
-        return "id:" + id + "\n" +
-                "Client Name: \t \t \t " + client.getName() + "\n" +
-                "Driver Name: \t\t\t" + (driver == null ? "waiting" : driver.getName()) + "\n" +
-                "Pickup Location: \t\t\t" + pickupLocation.getAddress() + "\n" +
-                "Destination: \t\t" + (actualDestination == null ? expectedDestination.getAddress() : actualDestination.getAddress()) + "\n" +
-                "Distance \t\t\t " + (actualDistance == null ? expectedDistance : actualDistance) + "\n" +
-                "Wait time \t\t\t" + (actualWaitTime == null ? expectedWaitTime : actualWaitTime) + "\n" +
-                "Fare \t\t\t" + fare;
+        return "id: " + id + "\n" +
+                "Client Name: " + client.getName() + "\n" +
+                "Driver Name: " + ((driver == null)?  "Waiting..." :  driver.getName() )+ "\n" +
+                "Pickup Location: " + pickupLocation.getAddress() + "\n" +
+                "Destination:" + (actualDestination == null ? expectedDestination.getAddress() : actualDestination.getAddress()) + "\n" +
+                "Distance (km): " + (actualDistance == null ? expectedDistance : actualDistance) + "\n" +
+                "Wait time (min): " + (actualWaitTime == null ? expectedWaitTime : actualWaitTime) + "\n" +
+                "Fare (vnd): " + AppUtils.covertPrice(fare);
     }
 
 

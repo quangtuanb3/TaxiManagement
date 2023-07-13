@@ -1,8 +1,9 @@
 package models;
 
+import java.io.Serializable;
 import java.sql.Time;
 
-public class Wait {
+public class Wait implements Serializable {
     private Time startTime;
     private Time endTime;
     private Location location;

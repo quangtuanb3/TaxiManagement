@@ -1,5 +1,7 @@
 package models;
 
+import Data.Enum.EAuth;
+
 import java.io.Serializable;
 
 public class Manager extends Person implements Serializable {
@@ -9,7 +11,7 @@ public class Manager extends Person implements Serializable {
     }
 
     public Manager(String name, String email, String password, String phoneNumber) {
-        super(name, email, password, phoneNumber);
+        super(name, email, password, phoneNumber, EAuth.ADMIN);
     }
 
     @Override
