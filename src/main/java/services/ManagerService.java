@@ -4,6 +4,7 @@ import Data.Enum.EPath;
 import models.Manager;
 import utils.Serializable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ManagerService {
@@ -19,9 +20,8 @@ public class ManagerService {
     }
 
     static {
-        listManagers = (List<Manager>) Serializable.deserialize(EPath.MANAGERS.getFilePath());
-           }
-
+        listManagers = new ArrayList<>((List<Manager>) Serializable.deserialize(EPath.MANAGERS.getFilePath()));
+    }
 
     public ManagerService() {
     }

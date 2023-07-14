@@ -21,28 +21,15 @@ public class CarManagerView {
         int choice;
         choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.carManagerMenuList.size() - 2);
         switch (choice) {
-            case 1:
-                carService.printAvailableCar();
-                break;
-            case 2:
-                addCarUi();
-                break;
-            case 3:
-                removeCar();
-                break;
-            case 4:
-                assignCar();
-                break;
-            case 5:
-                getCarDetail();
-                break;
-            case 6:
-                updateCarUi();
-                break;
-            case 0:
-                managerMenu();
-                break;
+            case 1 -> carService.printAll();
+            case 2 -> addCarUi();
+            case 3 -> removeCar();
+            case 4 -> assignCar();
+            case 5 -> getCarDetail();
+            case 6 -> updateCarUi();
+            case 0 -> managerMenu();
         }
+        carMenu();
     }
 
     private static void updateCarUi() {
@@ -53,7 +40,7 @@ public class CarManagerView {
             if (carService.isExist(carId)) {
                 Car car = carService.getById(carId);
                 ListView.printMenu(ListView.updateCarMenuList);
-                int choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.updateCarMenuList.size() - 1);
+                int choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.updateCarMenuList.size() - 2);
                 switch (choice) {
                     case 1:
                         String model = AppUtils.getString("Input new Model: ");

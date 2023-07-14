@@ -22,7 +22,7 @@ import java.util.*;
 import static utils.Constant.DATE_TIME_FORMATTER;
 
 public class AppUtils {
-    private static Scanner sc;
+    private static final Scanner sc;
 
     static {
         sc = new Scanner(System.in);
@@ -31,7 +31,6 @@ public class AppUtils {
     public static double round(double d) {
         DecimalFormat decimalFormat = new DecimalFormat("#.##");
         String roundedNumber = decimalFormat.format(d).replace(",", ".");
-        System.out.println(roundedNumber);
         return Double.parseDouble(roundedNumber);
     }
 

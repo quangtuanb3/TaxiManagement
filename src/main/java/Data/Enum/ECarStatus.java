@@ -1,6 +1,7 @@
 package Data.Enum;
 
 public enum ECarStatus {
+    WAITING_ASSIGN("Not assign"),
     USING("using"),
     REPAIRING("unavailable"),
     USED("used");

@@ -6,9 +6,9 @@ import models.Ride;
 import utils.AppUtils;
 import utils.Serializable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 public class DriverService implements BasicCRUD<Driver> {
@@ -25,8 +25,8 @@ public class DriverService implements BasicCRUD<Driver> {
     }
 
     static {
-        listDrivers = (List<Driver>) Serializable.deserialize(EPath.DRIVERS.getFilePath());
-        nextId = AppUtils.getNextId(listDrivers.stream().map(Driver::getId).collect(Collectors.toList()));
+        listDrivers = new ArrayList<>((List<Driver>) Serializable.deserialize(EPath.DRIVERS.getFilePath()));
+        nextId = AppUtils.getNextId(listDrivers.stream().map(Driver::getId).toList());
     }
 
     public DriverService() {
@@ -102,7 +102,7 @@ public class DriverService implements BasicCRUD<Driver> {
     public void delete(int driverId) {
         listDrivers = listDrivers.stream()
                 .filter(e -> !Objects.equals(e.getId(), driverId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 
@@ -114,7 +114,7 @@ public class DriverService implements BasicCRUD<Driver> {
 
     public static void printRideHistory() {
         if (DriverService.currentDriver != null) {
-            for (Ride ride : RideService.listRides.stream().filter(e -> e.getDriver().equals(DriverService.currentDriver)).collect(Collectors.toList())) {
+            for (Ride ride : RideService.listRides.stream().filter(e -> e.getDriver().equals(DriverService.currentDriver)).toList()) {
                 System.out.println(ride.toString());
             }
 

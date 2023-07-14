@@ -23,6 +23,7 @@ public abstract class Person implements Serializable {
         this.email = email;
         this.password = AppUtils.hashPassword(password);
         this.phoneNumber = phoneNumber;
+        this.eAuth = eAuth;
     }
 
     // Getters and setters for the properties

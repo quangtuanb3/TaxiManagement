@@ -10,7 +10,7 @@ import static services.CarService.listCars;
 
 
 public class Car implements Serializable {
-    private  int id;
+    private int id;
     private String model;
     private String licensePlate;
     private ECarType carType;
@@ -18,6 +18,7 @@ public class Car implements Serializable {
     private LocalDate insuranceExpiryDate;
     Driver driver = new Driver();
     ECarStatus status = ECarStatus.USING;
+
     public Car() {
 
     }
@@ -39,24 +40,23 @@ public class Car implements Serializable {
         this.insuranceExpiryDate = insuranceExpiryDate;
         this.registrationExpiryDate = registrationExpiryDate;
     }
-
-
-    @Override
-    public String toString() {
-        return
-                "id=" + id +
-                        ", model='" + model + '\'' +
-                        ", licensePlate='" + licensePlate + '\'' +
-                        ", seats=" + carType.getSeat() + '\'' +
-                        ", openPrice=" + carType.getOpenPrice() + '\'' +
-                        ", priceUnder30 =" + carType.getPriceUnder30() + '\'' +
-                        ", priceUpper30 =" + carType.getPriceUpper30() + '\'' +
-                        ", waitPrice=" + carType.getWaitPrice() + '\'' +
-                        ", registrationExpiryDate='" + registrationExpiryDate + '\'' +
-                        ", insuranceExpiryDate='" + insuranceExpiryDate + '\'' +
-                        ", driver Id='" + this.driver.getId() + '\'' +
-                        ", driver Name ='" + this.driver.getName() + '\n'
-                ;
+    public String toTableRow() {
+        return String.format("| %-3s | %-10s | %-13s | %-5s | %-10s | %-14s | %-14s | %-10s | %-20s | %-17s | %-14s | %-16s | %-9s |%n",
+                id,
+                model,
+                licensePlate,
+                carType.getSeat(),
+                carType.getOpenPrice(),
+                carType.getPriceUnder30(),
+                carType.getPriceUpper30(),
+                carType.getWaitPrice(),
+                registrationExpiryDate,
+                insuranceExpiryDate,
+                (this.driver == null ? "Waiting Assign" : this.driver.getId()),
+                (this.driver == null ? "Waiting Assign" : this.driver.getName()),
+                getStatus().getCarStatus()
+                )
+        ;
     }
 
     // Getters and setters for the properties

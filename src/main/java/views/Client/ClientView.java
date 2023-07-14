@@ -2,12 +2,11 @@ package views.Client;
 
 import Data.Enum.ECarType;
 import models.Distance;
-import models.Password;
 import models.Ride;
 import services.ClientService;
 import services.RideService;
 import utils.AppUtils;
-import utils.DistanceCalculator;
+import utils.MapQuest;
 import utils.ListView;
 
 import java.time.LocalDateTime;
@@ -16,35 +15,20 @@ import java.util.Objects;
 import static views.LoginView.loginMenu;
 
 public class ClientView {
-    static RideService rideService = new RideService();
-    static ClientService clientService = new ClientService();
 
     public static void clientMenu() {
         ListView.printMenu(ListView.clientMenuList);
         int choice = AppUtils.getIntWithBound("Input choice: ", 0, 6);
         switch (choice) {
-            case 1:
-                bookRideUI();
-
-                break;
-            case 2:
-                cancelRideUI();
-
-                break;
-            case 3:
-                rideService.getRideDetail();
-
-                break;
-            case 4:
-//                rideService.print();
-                break;
-            case 5:
-                updateUi();
-                break;
-            case 0:
+            case 1 -> bookRideUI();
+            case 2 -> cancelRideUI();
+            case 3 -> RideService.getInstance().getRideDetail();
+            case 4 -> RideService.printHistory();
+            case 5 -> updateUi();
+            case 0 -> {
                 System.out.println("Back to Login menu");
                 loginMenu();
-                break;
+            }
         }
         clientMenu();
     }
@@ -53,30 +37,32 @@ public class ClientView {
         ListView.printMenu(ListView.updateClientList);
         int choice = AppUtils.getIntWithBound("Input choice", 0, 3);
         switch (choice) {
-            case 1:
+            case 1 -> {
                 String name = AppUtils.getString("Input new name:");
                 ClientService.currentClient.setName(name);
-                break;
-            case 2:
+            }
+            case 2 -> {
                 String password;
                 String confirmPassword;
                 do {
                     password = AppUtils.getString("Input new password:");
                     confirmPassword = AppUtils.getString("Input confirm password:");
+                    if (Objects.equals(confirmPassword, password)) {
+                        System.out.println("Confirm password doesn't match with password");
+                    }
                 } while (!Objects.equals(password, confirmPassword));
                 ClientService.currentClient.setPassword(password);
-                break;
-            case 3:
+            }
+            case 3 -> {
                 String phone = AppUtils.getString("Input new phone number:");
                 ClientService.currentClient.setName(phone);
-                break;
-            case 0:
+            }
+            case 0 -> {
                 System.out.println("Back to Login menu");
                 clientMenu();
-                break;
-
+            }
         }
-        clientService.update(ClientService.currentClient);
+        ClientService.getInstance().update(ClientService.currentClient);
     }
 
     private static void cancelRideUI() {
@@ -89,7 +75,7 @@ public class ClientView {
 
         if (RideService.checkBeforeCancel()) {
             int rideId = AppUtils.getInt("Please input Ride Id to cancel:");
-            if (rideService.cancelRide(rideId)) {
+            if (RideService.getInstance().cancelRide(rideId)) {
                 System.out.println("Your ride has been cancelled!");
             } else {
                 System.out.printf("Ride with ID %d not found.\n", rideId);
@@ -112,18 +98,22 @@ public class ClientView {
             System.out.println("You are already booked a ride. Please come back late");
             return;
         }
-        Distance distance = DistanceCalculator.getDistance("Input depart: ", "Input destination: ");
+        Distance distance = MapQuest.getDistance("Input depart: ", "Input destination: ");
         LocalDateTime pickupTime = AppUtils.getDateTime("Input pickup time");
         int expectedWaitTime = AppUtils.getIntWithBound("Input expected wait time", 10, 1000);
         int carType = AppUtils.getIntWithBound("Input Car type (1.Four seats/2.Seven seats)", 1, 2);
-        Ride ride = rideService.bookRide(distance, carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
+        Ride ride = RideService.getInstance().bookRide(distance, carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
         System.out.println("Confirm your ride: ");
         int choice = AppUtils.getIntWithBound("Press 1 to book ride or 0 to back preview menu", 0, 1);
         if (choice == 0) {
             bookRideUI();
         } else {
-            rideService.create(ride);
-            System.out.println("Ride is booked successful!!");
+            if (RideService.getInstance().create(ride)) {
+                System.out.println("Ride is booked successful!!");
+            } else {
+                System.out.println("An error occurs. Please try again");
+                bookRideUI();
+            }
             clientMenu();
         }
 

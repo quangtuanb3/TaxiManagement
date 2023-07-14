@@ -13,6 +13,10 @@ public class Distance implements Serializable {
         this.distance = distance;
     }
 
+    public Distance() {
+
+    }
+
     public String getDepart() {
         return depart;
     }

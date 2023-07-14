@@ -10,7 +10,6 @@ import java.time.LocalDateTime;
 import static services.RideService.listRides;
 
 public class Ride implements Serializable {
-    //    private static final long serialVersionUID = -7682348882915930190L;
     private int id;
     private Client client;
     private Driver driver;
@@ -91,7 +90,7 @@ public class Ride implements Serializable {
     public String toString() {
         return "id: " + id + "\n" +
                 "Client Name: " + client.getName() + "\n" +
-                "Driver Name: " + ((driver == null)?  "Waiting..." :  driver.getName() )+ "\n" +
+                "Driver Name: " + ((driver == null) ? "Waiting..." : driver.getName()) + "\n" +
                 "Pickup Location: " + pickupLocation.getAddress() + "\n" +
                 "Destination:" + (actualDestination == null ? expectedDestination.getAddress() : actualDestination.getAddress()) + "\n" +
                 "Distance (km): " + (actualDistance == null ? expectedDistance : actualDistance) + "\n" +

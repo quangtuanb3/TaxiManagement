@@ -123,14 +123,14 @@ public class Startup {
         car9.setCarType(ECarType.SEVEN);
         car9.setRegistrationExpiryDate(LocalDate.parse("2023-12-31"));
         car9.setInsuranceExpiryDate(LocalDate.parse("2023-12-31"));
-        car9.setStatus(ECarStatus.USING);
-
-        CarService.listCars = Arrays.asList(car1, car2, car3, car4, car5, car6, car7, car8, car9);
+        car9.setStatus(ECarStatus.WAITING_ASSIGN);
+        car9.setDriver(null);
+        List<Car> cars = Arrays.asList(car1, car2, car3, car4, car5, car6, car7, car8, car9);
+        CarService.listCars = new ArrayList<>(cars);
         CarService.save();
     }
 
     private static void initDrivers() {
-
         Driver driver1 = new Driver();
         driver1.setId(1);
         driver1.setName("Trong Ty");
@@ -229,8 +229,8 @@ public class Startup {
         driver8.setDriverStatus(EDriverStatus.AVAILABLE);
         driver8.setAccountStatus(EAccountStatus.ACTIVE);
         driver8.setLocation(new Location("15 Lê Lợi, Vĩnh Ninh, Thành phố Huế, Thừa Thiên Huế, Việt Nam"));
-
-        DriverService.listDrivers = Arrays.asList(driver1, driver2, driver3, driver4, driver5, driver6, driver7, driver8);
+        List<Driver> list = Arrays.asList(driver1, driver2, driver3, driver4, driver5, driver6, driver7, driver8);
+        DriverService.listDrivers = new ArrayList<>(list);
         DriverService.save();
     }
 
@@ -278,7 +278,8 @@ public class Startup {
         client6.setPassword("pass1234");
         client6.setPhoneNumber("555-5555");
 
-        listClients = Arrays.asList(client1, client2, client3, client4, client5, client6);
+        List<Client> clients = Arrays.asList(client1, client2, client3, client4, client5, client6);
+        ClientService.listClients = new ArrayList<>(clients);
         ClientService.save();
 
     }
@@ -417,7 +418,8 @@ public class Startup {
         ride6.setActualWaitTime(22);
         ride6.setDriver(DriverService.listDrivers.get(5));
 
-        RideService.listRides = Arrays.asList(ride1, ride2, ride3, ride4, ride5, ride6);
+        List<Ride> rides = Arrays.asList(ride1, ride2, ride3, ride4, ride5, ride6);
+        RideService.listRides = new ArrayList<>(rides);
         RideService.waitingRides = RideService.listRides.stream().filter(e -> e.getStatus().equals(ERideStatus.WAITING)).collect(Collectors.toList());
 
         RideService.save();

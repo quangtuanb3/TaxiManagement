@@ -21,7 +21,7 @@ public class ListView {
     public static List<String> carManagerMenuList = Arrays.asList("Cars manager menu",
             "1. List Cars", "2. Add new Car", "3. Remove Car", "4. Assign Car",
             "5. Get Car's detail", "6. Update Car's Information", "0. Back to main menu");
-    public static List<String> updateCarMenuList = Arrays.asList(
+    public static List<String> updateCarMenuList = Arrays.asList("Update car Menu",
             "1. Edit Model", "2. Edit license plate number", "3. Edit insurance expiry date",
             "4. Edit registration expiry date", "0. Back to Cars manager menu "
     );
@@ -34,8 +34,24 @@ public class ListView {
             "0. Back to main menu");
 
     public static void printMenu(List<String> menu) {
+
+        printMenuDecoration("open");
         for (String str : menu) {
-            System.out.println(str);
+            System.out.printf("║ %-40s ║%n", str);
+        }
+
+        printMenuDecoration("close");
+    }
+
+    public static void printMenuDecoration(String open) {
+        switch (open) {
+            case "open":
+                System.out.println("╔══════════════════════════════════════════╗");
+                break;
+            default:
+                System.out.println("╚══════════════════════════════════════════╝");
+                break;
         }
     }
+
 }

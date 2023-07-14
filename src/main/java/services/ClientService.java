@@ -5,9 +5,9 @@ import models.Client;
 import utils.AppUtils;
 import utils.Serializable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 public class ClientService implements BasicCRUD<Client> {
     public static List<Client> listClients;
@@ -24,8 +24,8 @@ public class ClientService implements BasicCRUD<Client> {
     public static Client currentClient;
 
     static {
-        listClients = (List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath());
-        nextId = AppUtils.getNextId(listClients.stream().map(Client::getId).collect(Collectors.toList()));
+        listClients = new ArrayList<>((List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath()));
+        nextId = AppUtils.getNextId(listClients.stream().map(Client::getId).toList());
     }
 
     public ClientService() {
@@ -68,6 +68,7 @@ public class ClientService implements BasicCRUD<Client> {
         ) {
             return false;
         }
+        client.setId(nextId);
         listClients.add(client);
         save();
         return true;
@@ -97,7 +98,7 @@ public class ClientService implements BasicCRUD<Client> {
     public void delete(int clientId) {
         listClients = listClients.stream()
                 .filter(e -> !Objects.equals(e.getId(), clientId))
-                .collect(Collectors.toList());
+                .toList();
     }
 
 

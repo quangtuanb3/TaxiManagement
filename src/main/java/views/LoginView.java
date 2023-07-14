@@ -24,7 +24,6 @@ public class LoginView {
             loginMenu();
         }
     }
-
     public static void register() {
         System.out.println("Register: ");
         String name = AppUtils.getString("Input Name");

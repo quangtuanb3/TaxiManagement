@@ -7,6 +7,10 @@ public class Serializable {
     public static Object deserialize(String fileName) {
         Object obj = new ArrayList<>();
         try {
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
             FileInputStream fis = new FileInputStream(fileName);
             var ois = new ObjectInputStream(fis);
             obj = ois.readObject();

@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter;
 public class Constant {
     public static String API_KEY = "tHhcvtGjlPCJsOE1HBmjKwL7u1j5wV1V";
     public static String MAP_GET_DISTANCE = "https://www.mapquestapi.com/directions/v2/route";
+    public static String MAP_GET_ADDRESS = "https://www.mapquestapi.com/geocoding/v1/address?key=%s&location=%s";
     public static String MAP_GET_LOCATION = "https://www.mapquestapi.com/geocoding/v1/reverse?key=";
 //    public static final String ACCOUNT_SID = "AC9fc0eea1138a49cd80308c5c82f0788d";
 //    public static final String AUTH_TOKEN = "your_auth_token";
@@ -17,7 +18,7 @@ public class Constant {
 
     public static int MAX_RANGE = 50;
 
-    public static final int SALT_LENGTH = 10; // Length of the salt in bytes
+    public static final int SALT_LENGTH = 5; // Length of the salt in bytes
     public static final int ITERATIONS = 10000; // Number of iterations for the hashing algorithm
-    public static final int KEY_LENGTH = 256; // Length of the generated hash in bits
+    public static final int KEY_LENGTH = 10; // Length of the generated hash in bits
 }

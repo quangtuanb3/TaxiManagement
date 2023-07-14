@@ -7,18 +7,25 @@ import models.Driver;
 import utils.AppUtils;
 import utils.Serializable;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
-import java.util.stream.Collectors;
 
 
 public class CarService implements BasicCRUD<Car> {
     public static List<Car> listCars;
     private static int nextId;
+    private static CarService instance;
+    public static CarService getInstance() {
+        if (instance == null) {
+            instance = new CarService();
+        }
+        return instance;
+    }
 
     static {
-        listCars = (List<Car>) Serializable.deserialize(EPath.CARS.getFilePath());
-        nextId = AppUtils.getNextId(listCars.stream().map(Car::getId).collect(Collectors.toList()));
+        listCars = new ArrayList<>((List<Car>) Serializable.deserialize(EPath.CARS.getFilePath()));
+        nextId = AppUtils.getNextId(listCars.stream().map(Car::getId).toList());
     }
 
     public CarService() {
@@ -88,20 +95,28 @@ public class CarService implements BasicCRUD<Car> {
     public void delete(int carId) {
         listCars = listCars.stream()
                 .filter(e -> !Objects.equals(e.getId(), carId))
-                .collect(Collectors.toList());
+                .toList();
         save();
     }
 
     public void printAvailableCar() {
-        for (Car car : listCars.stream().filter(e -> e.getStatus() != ECarStatus.USED).collect(Collectors.toList())) {
-            System.out.println(car.toString());
+        StringBuilder tableBuilder = new StringBuilder();
+        tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status|\n");
+        tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-----------|\n");
+        for (Car car : listCars.stream().filter(e -> e.getStatus() != ECarStatus.USED).toList()) {
+            tableBuilder.append(car.toTableRow());
         }
+        System.out.println(tableBuilder);
     }
 
-    public void printAll(){
+    public void printAll() {
+        StringBuilder tableBuilder = new StringBuilder();
+        tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status|\n");
+        tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-----------|\n");
         for (Car car : listCars) {
-            System.out.println(car.toString());
+            tableBuilder.append(car.toTableRow());
         }
+        System.out.println(tableBuilder);
     }
 
     public boolean assignCarToDriver(Car car, Driver driver) {
