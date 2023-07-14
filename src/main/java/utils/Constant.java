@@ -16,7 +16,7 @@ public class Constant {
     public static String EMAIL = "codegym.taxi@gmail.com";
     public static String PASSWORD = "Tuan789@";
 
-    public static int MAX_RANGE = 50;
+    public static int MAX_RANGE = 60;
 
     public static final int SALT_LENGTH = 5; // Length of the salt in bytes
     public static final int ITERATIONS = 10000; // Number of iterations for the hashing algorithm

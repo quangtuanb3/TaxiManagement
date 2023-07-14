@@ -8,6 +8,7 @@ import java.io.Serializable;
 import java.time.LocalDateTime;
 
 import static services.RideService.listRides;
+import static utils.Constant.DATE_TIME_FORMATTER;
 
 public class Ride implements Serializable {
     private int id;
@@ -87,7 +88,7 @@ public class Ride implements Serializable {
     }
 
     public String toTableRow() {
-        return String.format("| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-15s |\n",
+        return String.format("| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-20s | %-15s |\n",
                 id,
                 client.getName(),
                 (driver == null) ? "Waiting..." : driver.getName(),
@@ -95,6 +96,7 @@ public class Ride implements Serializable {
                 (actualDestination == null) ? expectedDestination.getAddress() : actualDestination.getAddress(),
                 (actualDistance == null) ? expectedDistance : actualDistance,
                 (actualWaitTime == null) ? expectedWaitTime : actualWaitTime,
+                expectedPickupTime.format(DATE_TIME_FORMATTER),
                 (fare == 0D ? "CANCELLED" : AppUtils.convertPrice(fare)));
     }
 

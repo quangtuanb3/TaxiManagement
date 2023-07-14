@@ -44,7 +44,6 @@ public class DriverView {
             case 5 -> {
 //                "5. Get ride detail"
                 System.out.println(ListView.driverMenuList.get(5));
-                System.out.println();
                 printExpectedRide(DriverService.currentDriver.getCurrentRide());
             }
             case 6 -> {
@@ -58,6 +57,7 @@ public class DriverView {
                 loginMenu();
             }
         }
+        driverMenu();
     }
 
     private static void startRideUI() {

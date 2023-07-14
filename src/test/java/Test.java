@@ -1,19 +1,22 @@
 import Data.Enum.ECarType;
+import Data.Enum.ERideStatus;
 import models.Distance;
+import models.Location;
 import models.Ride;
 import services.ClientService;
+import services.DriverService;
 import services.RideService;
 import utils.AppUtils;
 import utils.MapQuest;
 
 import java.time.LocalDateTime;
 
-public class Test {
-    public static void main(String[] args) {
+import static services.ClientService.listClients;
 
-        caseGetAddress();
-    }
-    public static void caseBookRide() {
+public class Test {
+
+    @org.junit.Test
+    public void caseBookRide() {
         ClientService.currentClient = ClientService.listClients.get(0);
         RideService.autoDeclineRide();
         if (RideService.currentRide != null) {
@@ -36,8 +39,37 @@ public class Test {
         }
     }
 
-    public static void caseGetAddress() {
+    @org.junit.Test
+    public void caseGetAddress() {
         String address = MapQuest.getAddress("Input Address: ");
+        System.out.println(address);
+    }
+
+    @org.junit.Test
+    public void printAvailableRides() {
+        DriverService.currentDriver = DriverService.getByEmail("duytham@gmail.com");
+
+
+        Ride ride1 = new Ride();
+        ride1.setId(8);
+        ride1.setClient(listClients.get(1));
+        ride1.setCarType(ECarType.FOUR);
+        ride1.setPickupLocation(new Location("153 Phan Bội Châu, phường Trường An, Huế, Thừa Thiên Huế"));
+        ride1.setActualDestination(new Location("Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam"));
+        ride1.setExpectedDestination(new Location("20 Nguyễn Trãi, Tây Lộc, Huế, Thừa Thiên Huế"));
+        ride1.setFare(200000D);
+        ride1.setExpectedDistance(15.5D);
+        ride1.setActualDistance(4.7D);
+        ride1.setStatus(ERideStatus.WAITING);
+        ride1.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-14 23:00:00"));
+        ride1.setBookTime(AppUtils.parseDateTime("2023-07-14 20:32:00"));
+        ride1.setExpectedWaitTime(30);
+        RideService.listRides.add(ride1);
+        RideService.waitingRides.add(ride1);
+
+
+        RideService.listRides.forEach(ride -> System.out.println(ride.toTableRow()));
+        RideService.printAvailableRides();
     }
 
 }

@@ -66,7 +66,8 @@ public class RideManagerView {
                 "3 - ONGOING RIDES",
                 "4 - COMPLETED RIDES",
                 "5 - DECLINE RIDES",
-                "6 - CANCELLED RIDES");
+                "6 - CANCELLED RIDES",
+                "0 - Back to preview menu");
         ListView.printMenu(printRidesByStatusMenuList);
         int choice = AppUtils.getIntWithBound("Enter a number corresponding to the Ride Status:", 0, 6);
         switch (choice) {

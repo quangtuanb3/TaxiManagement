@@ -106,7 +106,7 @@ public class CarManagerView {
             getCarDetail();
         }
         Car car = carService.getById(carId);
-        System.out.println(car.toString());
+        System.out.println(car.toTableRow());
     }
 
     public static void assignCar() {

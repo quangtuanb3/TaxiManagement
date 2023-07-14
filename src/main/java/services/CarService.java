@@ -35,6 +35,7 @@ public class CarService implements BasicCRUD<Car> {
 
     public static boolean recall(Car car) {
         if (car.getDriver() != null) {
+            car.getDriver().setDriverStatus(EDriverStatus.WAITING_ASSIGN);
             car.setDriver(null);
             car.setStatus(ECarStatus.WAITING_ASSIGN);
             save();

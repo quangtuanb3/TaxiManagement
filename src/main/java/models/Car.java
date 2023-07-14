@@ -138,18 +138,10 @@ public class Car implements Serializable {
         return id;
     }
 
+
     public void printDetail() {
-        System.out.println("ID\tLicense Plate\t\tSeat\tOpen Price\tPrice Under 30\tPrice Upper 30\tInsurance Expiry\tRegistration Expiry");
-        System.out.println("-------------------------------------------------------------------------------------------------------------------");
-        System.out.printf("%s\t%s\t%d\t%d\t\t%d\t\t%d\t\t%s\t%s\n",
-                id, licensePlate,
-                carType.getSeat(),
-                carType.getOpenPrice(),
-                carType.getPriceUnder30(),
-                carType.getPriceUpper30(),
-                insuranceExpiryDate,
-                registrationExpiryDate);
+        System.out.print("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status  |\n");
+        System.out.print("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-------------|\n");
+        System.out.println(this.toTableRow());
     }
-
-
 }
