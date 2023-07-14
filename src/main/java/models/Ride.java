@@ -86,16 +86,16 @@ public class Ride implements Serializable {
         return id;
     }
 
-    @Override
-    public String toString() {
-        return "id: " + id + "\n" +
-                "Client Name: " + client.getName() + "\n" +
-                "Driver Name: " + ((driver == null) ? "Waiting..." : driver.getName()) + "\n" +
-                "Pickup Location: " + pickupLocation.getAddress() + "\n" +
-                "Destination:" + (actualDestination == null ? expectedDestination.getAddress() : actualDestination.getAddress()) + "\n" +
-                "Distance (km): " + (actualDistance == null ? expectedDistance : actualDistance) + "\n" +
-                "Wait time (min): " + (actualWaitTime == null ? expectedWaitTime : actualWaitTime) + "\n" +
-                "Fare (vnd): " + AppUtils.covertPrice(fare);
+    public String toTableRow() {
+        return String.format("| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-15s |\n",
+                id,
+                client.getName(),
+                (driver == null) ? "Waiting..." : driver.getName(),
+                pickupLocation.getAddress(),
+                (actualDestination == null) ? expectedDestination.getAddress() : actualDestination.getAddress(),
+                (actualDistance == null) ? expectedDistance : actualDistance,
+                (actualWaitTime == null) ? expectedWaitTime : actualWaitTime,
+                (fare == 0D ? "CANCELLED" : AppUtils.convertPrice(fare)));
     }
 
 

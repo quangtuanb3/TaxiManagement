@@ -20,43 +20,43 @@ public class DriverView {
         choice = AppUtils.getIntWithBound("Input choice", 0,
                 ListView.driverMenuList.size() - 2);
         switch (choice) {
-            case 1:
+            case 1 -> {
 //                "1. Approve ride"
                 System.out.println(ListView.driverMenuList.get(1));
                 RideService.autoDeclineRide();
                 ApproveRideUi();
-                break;
-            case 2:
+            }
+            case 2 -> {
 //                "2. Start ride"
                 System.out.println(ListView.driverMenuList.get(2));
                 startRideUI();
-                break;
-            case 3:
+            }
+            case 3 -> {
 //                "3. Finish ride"
                 System.out.println(ListView.driverMenuList.get(3));
                 finishRideUI();
-                break;
-            case 4:
+            }
+            case 4 -> {
 //                "4. Get car detail"
                 System.out.println(ListView.driverMenuList.get(4));
                 DriverService.currentDriver.getCar().printDetail();
-                break;
-            case 5:
+            }
+            case 5 -> {
 //                "5. Get ride detail"
                 System.out.println(ListView.driverMenuList.get(5));
                 System.out.println();
                 printExpectedRide(DriverService.currentDriver.getCurrentRide());
-                break;
-            case 6:
+            }
+            case 6 -> {
 //                "6. Get ride history"
                 System.out.println(ListView.driverMenuList.get(6));
                 DriverService.printRideHistory();
-                break;
-            case 0:
+            }
+            case 0 -> {
                 // 0 Back to login menu
                 System.out.println(ListView.driverMenuList.get(7));
                 loginMenu();
-                break;
+            }
         }
     }
 

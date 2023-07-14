@@ -103,13 +103,18 @@ public class ClientService implements BasicCRUD<Client> {
 
 
     public void print() {
-        for (Client client : listClients) {
-            System.out.println(client.toString());
+
+        StringBuilder tableBuilder = new StringBuilder();
+
+        tableBuilder.append("| ID   | Name                 | Email                     | Password      | Phone Number    |\n");
+        tableBuilder.append("|------|----------------------|---------------------------|---------------|-----------------|\n");
+        for (Client c : listClients) {
+            tableBuilder.append(c.toTableRow());
         }
+        System.out.println(tableBuilder);
     }
 
     public static void save() {
         Serializable.serialize(listClients, EPath.CLIENTS.getFilePath());
     }
-
 }

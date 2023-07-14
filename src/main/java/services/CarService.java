@@ -1,6 +1,7 @@
 package services;
 
 import Data.Enum.ECarStatus;
+import Data.Enum.EDriverStatus;
 import Data.Enum.EPath;
 import models.Car;
 import models.Driver;
@@ -16,6 +17,7 @@ public class CarService implements BasicCRUD<Car> {
     public static List<Car> listCars;
     private static int nextId;
     private static CarService instance;
+
     public static CarService getInstance() {
         if (instance == null) {
             instance = new CarService();
@@ -29,6 +31,16 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     public CarService() {
+    }
+
+    public static boolean recall(Car car) {
+        if (car.getDriver() != null) {
+            car.setDriver(null);
+            car.setStatus(ECarStatus.WAITING_ASSIGN);
+            save();
+            return true;
+        }
+        return false;
     }
 
 
@@ -101,8 +113,8 @@ public class CarService implements BasicCRUD<Car> {
 
     public void printAvailableCar() {
         StringBuilder tableBuilder = new StringBuilder();
-        tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status|\n");
-        tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-----------|\n");
+        tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status  |\n");
+        tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-------------|\n");
         for (Car car : listCars.stream().filter(e -> e.getStatus() != ECarStatus.USED).toList()) {
             tableBuilder.append(car.toTableRow());
         }
@@ -111,8 +123,8 @@ public class CarService implements BasicCRUD<Car> {
 
     public void printAll() {
         StringBuilder tableBuilder = new StringBuilder();
-        tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status|\n");
-        tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-----------|\n");
+        tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status  |\n");
+        tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-------------|\n");
         for (Car car : listCars) {
             tableBuilder.append(car.toTableRow());
         }
@@ -120,18 +132,37 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     public boolean assignCarToDriver(Car car, Driver driver) {
-        Driver oldDriver = car.getDriver();
-        if (oldDriver != null && oldDriver != driver) {
-            System.out.printf("This car has already assigned to %s (Driver Id: %d) \n", oldDriver.getName(), oldDriver.getId());
-            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back preview menu", 0, 1);
+        if (car == null || driver == null) {
+            return false;
+        }
+        Car oldCar = driver.getCar();
+        if (oldCar != null) {
+            System.out.printf("Driver %s (Id %s) is already assigned to a car with license plate %s.\n", driver.getName(), driver.getId(), driver.getCar().getLicensePlate());
+            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to go back to the previous menu: ", 0, 1);
             if (choice == 1) {
-                oldDriver.setCar(null);
+                oldCar.setDriver(null);
+                oldCar.setStatus(ECarStatus.WAITING_ASSIGN);
+
                 car.setDriver(driver);
+                car.setStatus(ECarStatus.USING);
+                driver.setCar(car);
+
                 update(car);
-                DriverService.getInstance().update(oldDriver);
+                update(oldCar);
+                DriverService.getInstance().update(driver);
                 return true;
             }
+        } else {
+            car.setDriver(driver);
+            car.setStatus(ECarStatus.USING);
+            driver.setCar(car);
+            driver.setDriverStatus(EDriverStatus.AVAILABLE);
+            update(car);
+            DriverService.getInstance().update(driver);
+            return true;
+
         }
         return false;
     }
+
 }

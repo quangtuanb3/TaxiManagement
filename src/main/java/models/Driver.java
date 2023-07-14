@@ -3,6 +3,7 @@ package models;
 import Data.Enum.EAccountStatus;
 import Data.Enum.EAuth;
 import Data.Enum.EDriverStatus;
+import utils.AppUtils;
 
 import java.io.Serializable;
 
@@ -44,7 +45,6 @@ public class Driver extends Person implements Serializable {
         super(name, email, password, phoneNumber, EAuth.DRIVER);
         this.accountStatus = accountStatus;
     }
-
 
 
     public int getSalary() {
@@ -102,15 +102,15 @@ public class Driver extends Person implements Serializable {
     }
 
 
-    @Override
-    public String toString() {
-        return "id: " + getId() +
-                ", Name: " + getName() +
-                ", Email: " + getEmail() +
-                ", Car: " + car.getId() +
-                ", " + getAccountStatus() +
-                ", salary: " + salary +
-                ", accountStatus: " + accountStatus + '\n';
+    public String toTableRow() {
+        return String.format("| %-4s | %-20s | %-26s | %-10s | %-13s | %-16s | %-15s |%n",
+                getId(),
+                getName(),
+                getEmail(),
+                car != null ? car.getLicensePlate() : "Waiting",
+                AppUtils.convertPrice(salary),
+                driverStatus,
+                accountStatus);
     }
 
     public static int getNextId() {

@@ -76,6 +76,7 @@ public class DriverService implements BasicCRUD<Driver> {
                 break;
             }
         }
+        save();
     }
 
     public static void save() {
@@ -107,9 +108,13 @@ public class DriverService implements BasicCRUD<Driver> {
 
 
     public void print() {
+        StringBuilder tableBuilder = new StringBuilder();
+        tableBuilder.append("| ID   | Name                 | Email                      | Car        | Salary        | Driver Status    | Account Status  |\n");
+        tableBuilder.append("|------|----------------------|----------------------------|------------|---------------|------------------|-----------------|\n");
         for (Driver driver : listDrivers) {
-            System.out.println(driver.toString());
+            tableBuilder.append(driver.toTableRow());
         }
+        System.out.println(tableBuilder);
     }
 
     public static void printRideHistory() {

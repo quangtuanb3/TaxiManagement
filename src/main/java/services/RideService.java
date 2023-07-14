@@ -15,9 +15,9 @@ import utils.Serializable;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.time.Month;
+import java.time.YearMonth;
+import java.util.*;
 
 import static utils.AppUtils.getDateTimeNow;
 import static utils.AppUtils.getDuration;
@@ -75,6 +75,84 @@ public class RideService implements BasicCRUD<Ride> {
             return;
         }
         printListRides(history);
+    }
+
+    public static void printRide(Driver driver) {
+        List<Ride> rides = listRides.stream().filter(e -> Objects.equals(e.getDriver().getId(), driver.getId())).toList();
+        if (rides.size() == 0) {
+            return;
+        }
+        printListRides(rides);
+    }
+
+
+    public static void printRideDaily(int month, int year) {
+        YearMonth yearMonth = YearMonth.of(year, month);
+        int daysInMonth = yearMonth.lengthOfMonth();
+
+        Map<LocalDate, Integer> ridesPerDay = new HashMap<>();
+        Map<LocalDate, Double> farePerDay = new HashMap<>();
+
+        for (Ride ride : listRides) {
+            LocalDate rideDate = ride.getEndTime().toLocalDate();
+            if (rideDate.getMonthValue() == month && rideDate.getYear() == year) {
+                int ridesCount = ridesPerDay.getOrDefault(rideDate, 0);
+                double fareSum = farePerDay.getOrDefault(rideDate, 0.0);
+                ridesPerDay.put(rideDate, ridesCount + 1);
+                farePerDay.put(rideDate, fareSum + ride.getFare());
+            }
+        }
+
+        System.out.println("| Date       | Number of rides | Total fare     |");
+        for (int day = 1; day <= daysInMonth; day++) {
+            LocalDate currentDate = LocalDate.of(year, month, day);
+            int ridesCount = ridesPerDay.getOrDefault(currentDate, 0);
+            double fareSum = farePerDay.getOrDefault(currentDate, 0.0);
+            System.out.printf("| %s | %-15d | %-14.2f |\n", currentDate.toString(), ridesCount, fareSum);
+        }
+    }
+
+
+    public static void printRideMonthly(int year) {
+        LocalDate startDate = LocalDate.of(year, 1, 1);
+        LocalDate endDate = LocalDate.of(year, 12, 31);
+        List<Ride> rides = listRides.stream()
+                .filter(e -> e.getEndTime().toLocalDate().isAfter(startDate) && e.getEndTime().toLocalDate().isBefore(endDate))
+                .toList();
+
+        Map<Month, Integer> ridesPerMonth = new HashMap<>();
+        Map<Month, Double> farePerMonth = new HashMap<>();
+
+        for (Ride ride : rides) {
+            Month month = ride.getEndTime().getMonth();
+            int ridesCount = ridesPerMonth.getOrDefault(month, 0);
+            double fareSum = farePerMonth.getOrDefault(month, 0.0);
+            ridesPerMonth.put(month, ridesCount + 1);
+            farePerMonth.put(month, fareSum + ride.getFare());
+        }
+        System.out.println("| Month      | Number of rides | Total fare     |");
+        for (Month month : Month.values()) {
+            int ridesCount = ridesPerMonth.getOrDefault(month, 0);
+            double fareSum = farePerMonth.getOrDefault(month, 0.0);
+            System.out.printf("| %-10s | %-15d | %-14.2f |\n", month.toString(), ridesCount, fareSum);
+        }
+    }
+
+
+    public static Double calculateRevenue(Driver driver) {
+        List<Ride> rides = listRides.stream().filter(e -> Objects.equals(e.getDriver().getId(), driver.getId())).toList();
+        Double total = 0D;
+        for (Ride r : rides) {
+            if (r.getFare() != null) {
+                total += r.getFare();
+            }
+
+        }
+        return total;
+    }
+
+    public static int getNumberOfRides(Driver driver) {
+        return listRides.stream().filter(e -> Objects.equals(e.getDriver().getId(), driver.getId())).toList().size();
     }
 
 
@@ -140,7 +218,7 @@ public class RideService implements BasicCRUD<Ride> {
     public void print(ERideStatus eRideStatus) {
         List<Ride> list = listRides.stream().filter(e ->
                 e.getStatus().equals(eRideStatus)).toList();
-        if (list.get(0) != null) {
+        if (list.size() != 0) {
             printListRides(list);
         } else {
             System.out.println("There is no ride!");
@@ -148,15 +226,18 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     private static void printListRides(List<Ride> rides) {
+//        "| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-15s
+        StringBuilder tableBuilder = new StringBuilder();
+        tableBuilder.append("| ID   | Client Name         | Driver Name         | Pickup Location                                                             | Destination                                                                 | Distance (km)   | Wait time (min) | Fare (vnd)      |\n");
+        tableBuilder.append("|------|---------------------|---------------------|-----------------------------------------------------------------------------|-----------------------------------------------------------------------------|-----------------|-----------------|-----------------|\n");
         for (Ride ride : rides) {
-            System.out.println(ride.toString());
+            tableBuilder.append(ride.toTableRow());
         }
+        System.out.println(tableBuilder);
     }
 
     public void printAll() {
-        for (Ride ride : listRides) {
-            System.out.println(ride.toString());
-        }
+        printListRides(listRides);
     }
 
     public static void updateRideStatus(Ride ride, ERideStatus status) {
@@ -184,6 +265,7 @@ public class RideService implements BasicCRUD<Ride> {
 
     public boolean cancelRide(int rideId) {
         getById(rideId).setStatus(ERideStatus.CANCELLED);
+        getById(rideId).setFare(0D);
         RideService.currentRide = null;
         return true;
     }
@@ -232,22 +314,11 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static boolean printAvailableRides() {
-        System.out.println("ID\tClient Name\t\tPickup Location\t\t\t\t\t\t\tDestination\t\t\t\t\t\tDistance\t\t\tWait Time In Trip\t\tFare");
-        System.out.println("--------------------------------------------------------------------------------------------------------------------------");
         if (availableRides == null) {
             System.out.println("There is no ride available");
             return false;
         }
-        for (Ride ride : availableRides) {
-            System.out.printf("%s \t %s\t\t %s\t %s\t\t %.2f\t\t %d\t %s \n",
-                    ride.getId(),
-                    ride.getClient().getName(),
-                    ride.getPickupLocation().getAddress(),
-                    ride.getExpectedDestination().getAddress(),
-                    ride.getExpectedDistance(),
-                    ride.getExpectedWaitTime(),
-                    AppUtils.covertPrice(ride.getFare()));
-        }
+        printListRides(availableRides);
         return true;
     }
 
@@ -279,7 +350,7 @@ public class RideService implements BasicCRUD<Ride> {
                 ride.getCarType().getSeat(),
                 ride.getExpectedDistance(),
                 ride.getExpectedWaitTime(),
-                AppUtils.covertPrice(ride.getFare()));
+                AppUtils.convertPrice(ride.getFare()));
     }
 
     public static void printActualRide(Ride ride) {
@@ -295,7 +366,7 @@ public class RideService implements BasicCRUD<Ride> {
                 ride.getCarType().getSeat(),
                 ride.getActualDistance(),
                 ride.getActualWaitTime(),
-                AppUtils.covertPrice(ride.getFare()));
+                AppUtils.convertPrice(ride.getFare()));
     }
 
     public boolean isInList(List<Ride> list, int rideId) {
@@ -308,8 +379,10 @@ public class RideService implements BasicCRUD<Ride> {
                         && ride.getEndTime().toLocalDate().isBefore(end.plusDays(1)))
                 .toList();
 
-        for (Ride ride : ridesInRange) {
-            System.out.println(ride.toString());
+        if (ridesInRange.size() != 0) {
+            printListRides(ridesInRange);
+        } else {
+            System.out.printf("There is no ride from %s to %s \n", start.toString(), end.toString());
         }
     }
 

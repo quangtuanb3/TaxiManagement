@@ -229,7 +229,21 @@ public class Startup {
         driver8.setDriverStatus(EDriverStatus.AVAILABLE);
         driver8.setAccountStatus(EAccountStatus.ACTIVE);
         driver8.setLocation(new Location("15 Lê Lợi, Vĩnh Ninh, Thành phố Huế, Thừa Thiên Huế, Việt Nam"));
-        List<Driver> list = Arrays.asList(driver1, driver2, driver3, driver4, driver5, driver6, driver7, driver8);
+
+        Driver driver9 = new Driver();
+        driver9.setId(9);
+        driver9.setName("Huong Nguyen");
+        driver9.setEmail("huongnguyen@gmail.com");
+        driver9.setPassword("5678");
+        driver9.setPhoneNumber("0912345678");
+        driver9.setCar(null);
+        driver9.setSalary(12000000);
+        driver9.setDriverStatus(EDriverStatus.WAITING_ASSIGN);
+        driver9.setAccountStatus(EAccountStatus.ACTIVE);
+        driver9.setLocation(new Location("120 Điện Biên Phủ, Trường An, Huế, Thừa Thiên Huế, Việt Nam"));
+
+
+        List<Driver> list = Arrays.asList(driver1, driver2, driver3, driver4, driver5, driver6, driver7, driver8, driver9);
         DriverService.listDrivers = new ArrayList<>(list);
         DriverService.save();
     }
@@ -309,11 +323,11 @@ public class Startup {
         ride1.setExpectedDistance(15.5D);
         ride1.setActualDistance(4.7D);
         ride1.setStatus(ERideStatus.COMPLETED);
-        ride1.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-01 10:00:00"));
-        ride1.setStartTime(AppUtils.parseDateTime("2023-07-01 10:00:00"));
-        ride1.setEndTime(AppUtils.parseDateTime("2023-07-01 10:30:00"));
-        ride1.setConfirmedTime(AppUtils.parseDateTime("2023-07-01 10:03:00"));
-        ride1.setBookTime(AppUtils.parseDateTime("2023-07-01 10:03:00"));
+        ride1.setExpectedPickupTime(AppUtils.parseDateTime("2023-02-01 10:00:00"));
+        ride1.setStartTime(AppUtils.parseDateTime("2023-02-01 10:00:00"));
+        ride1.setEndTime(AppUtils.parseDateTime("2023-02-01 10:30:00"));
+        ride1.setConfirmedTime(AppUtils.parseDateTime("2023-02-01 10:03:00"));
+        ride1.setBookTime(AppUtils.parseDateTime("2023-02-01 10:03:00"));
         ride1.setExpectedWaitTime(30);
         ride1.setActualWaitTime(40);
         ride1.setDriver(DriverService.listDrivers.get(0));
@@ -330,10 +344,10 @@ public class Startup {
         ride2.setActualDistance(14.5D);
         ride2.setStatus(ERideStatus.COMPLETED);
         ride2.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-02 07:00:00"));
-        ride2.setStartTime(AppUtils.parseDateTime("2023-07-02 07:12:00"));
-        ride2.setEndTime(AppUtils.parseDateTime("2023-07-02 07:42:00"));
-        ride2.setConfirmedTime(AppUtils.parseDateTime("2023-07-02 07:04:00"));
-        ride2.setBookTime(AppUtils.parseDateTime("2023-07-02 06:58:00"));
+        ride2.setStartTime(AppUtils.parseDateTime("2023-05-02 07:12:00"));
+        ride2.setEndTime(AppUtils.parseDateTime("2023-05-02 07:42:00"));
+        ride2.setConfirmedTime(AppUtils.parseDateTime("2023-05-02 07:04:00"));
+        ride2.setBookTime(AppUtils.parseDateTime("2023-05-02 06:58:00"));
         ride2.setExpectedWaitTime(0);
         ride2.setActualWaitTime(0);
         ride2.setDriver(DriverService.listDrivers.get(1));
@@ -365,7 +379,7 @@ public class Startup {
         ride4.setPickupLocation(new Location("45 Lê Lợi, phường Phú Hội, Huế, Thừa Thiên Huế"));
         ride4.setActualDestination(new Location("Chùa Thiên Mụ, Phường Hương Long, Huế, Thừa Thiên Huế, Việt Nam"));
         ride4.setExpectedDestination(new Location("Khu Di tích Hồ Chí Minh, Huế, Thừa Thiên Huế"));
-        ride4.setFare(150000D);
+        ride4.setFare(0D);
         ride4.setExpectedDistance(12.3D);
         ride4.setActualDistance(8.6D);
         ride4.setStatus(ERideStatus.CANCELLED);
@@ -385,15 +399,15 @@ public class Startup {
         ride5.setPickupLocation(new Location("10 Nguyễn Huệ, phường Phú Hội, Huế, Thừa Thiên Huế"));
         ride5.setActualDestination(new Location("Khai Đình, Thủy Bằng, Huế, Thừa Thiên Huế, Việt Nam"));
         ride5.setExpectedDestination(new Location("Thành cổ Huế, phường Phú Hội, Huế, Thừa Thiên Huế"));
-        ride5.setFare(180000D);
+        ride5.setFare(0D);
         ride5.setExpectedDistance(10.2D);
         ride5.setActualDistance(11.5D);
-        ride5.setStatus(ERideStatus.COMPLETED);
-        ride5.setExpectedPickupTime(AppUtils.parseDateTime("2023-07-03 09:15:00"));
-        ride5.setStartTime(AppUtils.parseDateTime("2023-07-03 09:20:00"));
-        ride5.setEndTime(AppUtils.parseDateTime("2023-07-03 09:40:00"));
-        ride5.setConfirmedTime(AppUtils.parseDateTime("2023-07-03 09:18:00"));
-        ride5.setBookTime(AppUtils.parseDateTime("2023-07-03 09:18:00"));
+        ride5.setStatus(ERideStatus.CANCELLED);
+        ride5.setExpectedPickupTime(AppUtils.parseDateTime("2023-06-03 09:15:00"));
+        ride5.setStartTime(AppUtils.parseDateTime("2023-06-03 09:20:00"));
+        ride5.setEndTime(AppUtils.parseDateTime("2023-06-03 09:40:00"));
+        ride5.setConfirmedTime(AppUtils.parseDateTime("2023-06-03 09:18:00"));
+        ride5.setBookTime(AppUtils.parseDateTime("2023-06-03 09:18:00"));
         ride5.setExpectedWaitTime(25);
         ride5.setActualWaitTime(22);
         ride5.setDriver(DriverService.listDrivers.get(4));

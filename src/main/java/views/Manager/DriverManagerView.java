@@ -11,38 +11,26 @@ public class DriverManagerView {
     static DriverService driverService = new DriverService();
 
     public static void driverMangerMenu() {
-        int choice;
-        do {
-            System.out.println("Driver manager menu");
-            System.out.println("1. List Drivers");
-            System.out.println("2. Add new Driver");
-            System.out.println("3. Remove Driver");
-            System.out.println("4. Get Driver's detail");
-            System.out.println("5. Update Driver's Information");
-            System.out.println("0. Back to main menu");
-            choice = AppUtils.getIntWithBound("Input choice", 0, 5);
-            switch (choice) {
-                case 1:
-                    driverService.print();
-                    break;
-                case 2:
-                    driverService.create(addDriverUi());
-                    break;
-                case 3:
-                    blockDriver();
-                    break;
-                case 4:
-                    getDriverDetail();
-                    break;
-                case 5:
-                    updateDriverUi();
-                case 0:
-                    System.out.println("Back to manager menu");
-                    managerMenu();
-                    break;
-            }
+
+        int choice = AppUtils.getIntWithBound("Input choice", 0, 5);
+        switch (choice) {
+            case 1:
+                driverService.print();
+                break;
+            case 2:
+                driverService.create(addDriverUi());
+                break;
+            case 3:
+                blockDriver();
+                break;
+            case 4:
+                updateDriverUi();
+            case 0:
+                System.out.println("Back to manager menu");
+                managerMenu();
+                break;
         }
-        while (choice != 0);
+
     }
 
     private static void updateDriverUi() {
@@ -60,7 +48,7 @@ public class DriverManagerView {
     private static void getDriverDetail() {
         System.out.println("Get Driver's detail: ");
         int driverId = AppUtils.getInt("Input Driver id: ");
-        if (!driverService.isExist( driverId)) {
+        if (!driverService.isExist(driverId)) {
             System.out.printf("Not found %d.\n", driverId);
             getDriverDetail();
         }
@@ -70,7 +58,7 @@ public class DriverManagerView {
     private static void blockDriver() {
         driverService.print();
         int driverId = AppUtils.getInt("Input drive id to block: ");
-        if (!driverService.isExist( driverId)) {
+        if (!driverService.isExist(driverId)) {
             System.out.printf("Not found %d.\n", driverId);
             blockDriver();
         }

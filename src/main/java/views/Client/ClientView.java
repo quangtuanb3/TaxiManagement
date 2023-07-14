@@ -71,8 +71,7 @@ public class ClientView {
             return;
         }
 
-        System.out.println(RideService.currentRide);
-
+        System.out.println(RideService.currentRide.toTableRow());
         if (RideService.checkBeforeCancel()) {
             int rideId = AppUtils.getInt("Please input Ride Id to cancel:");
             if (RideService.getInstance().cancelRide(rideId)) {

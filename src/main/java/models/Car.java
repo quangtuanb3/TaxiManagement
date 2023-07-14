@@ -41,7 +41,7 @@ public class Car implements Serializable {
         this.registrationExpiryDate = registrationExpiryDate;
     }
     public String toTableRow() {
-        return String.format("| %-3s | %-10s | %-13s | %-5s | %-10s | %-14s | %-14s | %-10s | %-20s | %-17s | %-14s | %-16s | %-9s |%n",
+        return String.format("| %-3s | %-10s | %-13s | %-5s | %-10s | %-14s | %-14s | %-10s | %-20s | %-17s | %-14s | %-16s | %-11s |%n",
                 id,
                 model,
                 licensePlate,

@@ -6,7 +6,7 @@ import java.io.Serializable;
 
 public class Client extends Person implements Serializable {
     public Client(String name, String email, String password, String phoneNumber) {
-        super(name, email, password, phoneNumber, EAuth.CLIENT );
+        super(name, email, password, phoneNumber, EAuth.CLIENT);
     }
 
     public Client() {
@@ -21,10 +21,8 @@ public class Client extends Person implements Serializable {
 
     }
 
-    @Override
-    public String toString() {
-        return super.getId() + " " +
-                super.getEmail() + " " +
-                super.getName();
+    public String toTableRow() {
+        return String.format("| %-4s | %-20s | %-25s | %-13s | %-15s |\n",
+                super.getId(), super.getName(), super.getEmail(), super.getPassword().getPasscode(), super.getPhoneNumber());
     }
 }

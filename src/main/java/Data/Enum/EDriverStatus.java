@@ -1,6 +1,7 @@
 package Data.Enum;
 
 public enum EDriverStatus {
+    WAITING_ASSIGN("waiting assign"),
     AVAILABLE("available"),
     UNAVAILABLE("unavailable"),
     ON_TRIP("on_trip");

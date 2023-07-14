@@ -5,6 +5,7 @@ import utils.ListView;
 
 import static views.LoginView.loginMenu;
 import static views.Manager.CarManagerView.carMenu;
+import static views.Manager.ClientManagerView.clientManagerMenu;
 import static views.Manager.DriverManagerView.driverMangerMenu;
 import static views.Manager.RideManagerView.rideManagerMenu;
 
@@ -15,9 +16,7 @@ public class MangerView {
         switch (choice) {
             case 1 -> carMenu();
             case 2 -> driverMangerMenu();
-            case 3 ->
-//                ClientMenu
-                    System.out.println("Upgrading...");
+            case 3 -> clientManagerMenu();
             case 4 -> rideManagerMenu();
             case 0 -> {
                 System.out.println("Back to Login menu");

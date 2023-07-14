@@ -1,5 +1,6 @@
 package views.Manager;
 
+import Data.Enum.EAccountStatus;
 import Data.Enum.ECarStatus;
 import Data.Enum.ECarType;
 import models.Car;
@@ -22,14 +23,33 @@ public class CarManagerView {
         choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.carManagerMenuList.size() - 2);
         switch (choice) {
             case 1 -> carService.printAll();
-            case 2 -> addCarUi();
+            case 2 -> addCarUI();
             case 3 -> removeCar();
-            case 4 -> assignCar();
-            case 5 -> getCarDetail();
-            case 6 -> updateCarUi();
+            case 4 -> recallCarUI();
+            case 5 -> assignCar();
+            case 6 -> getCarDetail();
+            case 7 -> updateCarUi();
             case 0 -> managerMenu();
         }
         carMenu();
+    }
+
+    private static void recallCarUI() {
+        System.out.println("Recall Car Menu ");
+        carService.printAvailableCar();
+        Car car = CarService.getInstance().getById("Input Car Id: ");
+        System.out.printf("You are recalling car %s from Driver %s. \n", car.getLicensePlate(), car.getDriver().getName());
+        int choice = AppUtils.getIntWithBound("Input 1 to continue or 0 to cancel", 0, 1);
+        if (choice == 1) {
+            if (CarService.recall(car)) {
+                System.out.println("Recall car successfully");
+                return;
+            }
+            System.out.println("Unable to recall car. Please try again");
+            recallCarUI();
+        } else {
+            carMenu();
+        }
     }
 
     private static void updateCarUi() {
@@ -42,25 +62,24 @@ public class CarManagerView {
                 ListView.printMenu(ListView.updateCarMenuList);
                 int choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.updateCarMenuList.size() - 2);
                 switch (choice) {
-                    case 1:
+                    case 1 -> {
                         String model = AppUtils.getString("Input new Model: ");
                         car.setModel(model);
-                        break;
-                    case 2:
+                    }
+                    case 2 -> {
                         String license = AppUtils.getString("Input new license plate: ");
                         car.setLicensePlate(license);
-                        break;
-                    case 3:
+                    }
+                    case 3 -> {
                         LocalDate insuranceExpired = AppUtils.getDate("Input new insurance expired : ");
                         car.setInsuranceExpiryDate(insuranceExpired);
-                        break;
-                    case 4:
+                    }
+                    case 4 -> {
                         LocalDate registrationExpired = AppUtils.getDate("Input new registration expired: ");
                         car.setRegistrationExpiryDate(registrationExpired);
-                        break;
-                    case 0:
-                        carMenu();
-                        break;
+                    }
+
+                    case 0 -> carMenu();
                 }
                 carService.update(car);
             }
@@ -69,7 +88,7 @@ public class CarManagerView {
         }
     }
 
-    public static void addCarUi() {
+    public static void addCarUI() {
         String model = AppUtils.getString("Input model:");
         String licensePlate = AppUtils.getString("Input licensePlate: ");
         ECarType carType = AppUtils.getIntWithBound("Input type of car: (1. Four Seats/ 2. Seven Seats)", 1, 2) == 1 ? ECarType.FOUR : ECarType.SEVEN;
@@ -91,11 +110,22 @@ public class CarManagerView {
     }
 
     public static void assignCar() {
-        System.out.println("Assign car");
-        driverService.print();
-        Driver driver = driverService.getById("Input driver Id: ");
+        System.out.println("Assign car menu");
         carService.printAvailableCar();
         Car car = carService.getById("Input car Id: ");
+        if (car.getDriver() != null) {
+            System.out.printf("This car has been assigned to %s. Please recall car first \n", car.getDriver().getName());
+            carMenu();
+        }
+        driverService.print();
+        Driver driver;
+        do {
+            driver = driverService.getById("Input driver Id: ");
+            if (driver.getAccountStatus() == EAccountStatus.BLOCKED || driver.getAccountStatus() == EAccountStatus.INACTIVE || !driver.isAvailable()) {
+                System.out.println("This driver can be assigned car (Account is blocking/inactive or Driver is on trip)");
+            }
+        } while (driver.getAccountStatus() == EAccountStatus.BLOCKED || driver.getAccountStatus() == EAccountStatus.INACTIVE || !driver.isAvailable());
+
         if (carService.assignCarToDriver(car, driver)) {
             System.out.println("Assign car successfully");
         } else {

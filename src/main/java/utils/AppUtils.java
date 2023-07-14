@@ -152,7 +152,7 @@ public class AppUtils {
         return integerList.stream().max(Integer::compareTo).orElse(0) + 1;
     }
 
-    public static String covertPrice(double price) {
+    public static String convertPrice(double price) {
         Locale localeVN = new Locale("vi", "VN");
         NumberFormat currencyFormatter = NumberFormat.getCurrencyInstance(localeVN);
         return currencyFormatter.format(price);
