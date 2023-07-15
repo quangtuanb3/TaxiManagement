@@ -1,5 +1,6 @@
 package utils;
 
+import Data.Enum.EPattern;
 import models.Password;
 
 import javax.crypto.SecretKeyFactory;
@@ -17,7 +18,11 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
-import java.util.*;
+import java.util.Base64;
+import java.util.List;
+import java.util.Locale;
+import java.util.Scanner;
+import java.util.regex.Pattern;
 
 import static utils.Constant.DATE_TIME_FORMATTER;
 
@@ -41,7 +46,7 @@ public class AppUtils {
             if (data.equals("")) {
                 throw new Exception();
             }
-            return data;
+            return data.trim();
         } catch (Exception e) {
             System.out.println("Empty data. Input again!");
             return getString(str);
@@ -158,7 +163,7 @@ public class AppUtils {
         return currencyFormatter.format(price);
     }
 
-//Pass here:
+    //Pass here:
     // 3 Constant: trong lop Constant
     // Tao lop Password để luu 2 giá trị passcode và key
     // Chinh sua 1 tý ở login service là xong!
@@ -197,6 +202,15 @@ public class AppUtils {
         System.arraycopy(salt, 0, saltAndHash, 0, salt.length);
         System.arraycopy(hash, 0, saltAndHash, salt.length, hash.length);
         return Base64.getEncoder().encodeToString(saltAndHash);
+    }
+
+    public static String getStringWithPattern(EPattern ePattern) {
+        String result = getString(ePattern.getMessage());
+        if (!Pattern.compile(ePattern.getPattern()).matcher(result).matches()) {
+            System.out.println(ePattern.getErrorMsg());
+            return getStringWithPattern(ePattern);
+        }
+        return result;
     }
 }
 

@@ -30,12 +30,6 @@ public class RideService implements BasicCRUD<Ride> {
     static {
         listRides = new ArrayList<>((List<Ride>) Serializable.deserialize(EPath.RIDES.getFilePath()));
         waitingRides = new ArrayList<>(listRides.stream().filter(e -> e.getStatus().equals(ERideStatus.WAITING)).toList());
-        availableRides = waitingRides.stream()
-                .filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 120)
-                .filter(e -> e.getCarType().equals(DriverService.currentDriver.getCar().getCarType()))
-                .filter(e -> MapQuest.calculateDistance(e.getPickupLocation().getAddress(),
-                        DriverService.currentDriver.getLocation().getAddress()) < Constant.MAX_RANGE)
-                .toList();
     }
 
     private static RideService instance;
@@ -84,6 +78,12 @@ public class RideService implements BasicCRUD<Ride> {
         printListRides(rides);
     }
 
+    public static List<Ride> getWaitingRides() {
+        if (listRides == null) {
+            return new ArrayList<>();
+        }
+        return new ArrayList<>(listRides.stream().filter(e -> e.getStatus().equals(ERideStatus.WAITING)).toList());
+    }
 
     public static void printRideDaily(int month, int year) {
         YearMonth yearMonth = YearMonth.of(year, month);
@@ -163,6 +163,7 @@ public class RideService implements BasicCRUD<Ride> {
     @Override
     public boolean create(Ride ride) {
         listRides.add(ride);
+        save();
         return true;
     }
 
@@ -172,7 +173,7 @@ public class RideService implements BasicCRUD<Ride> {
             Double fare = fareCalculator.firstCalculateFare(ride);
             ride.setFare(fare);
             currentRide = ride;
-            if (waitingRides == null) {
+            if (getWaitingRides().size() == 0) {
                 waitingRides = new ArrayList<>();
                 waitingRides.add(ride);
             }
@@ -180,7 +181,7 @@ public class RideService implements BasicCRUD<Ride> {
             System.out.print("| ID   | Client Name         | Driver Name         | " +
                     "Pickup Location                                                             |" +
                     " Destination                                                                 | " +
-                    "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)      |\n");
+                    "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)       |\n");
             System.out.print("|------|---------------------|---------------------|" +
                     "-----------------------------------------------------------------------------|" +
                     "-----------------------------------------------------------------------------|" +
@@ -196,14 +197,13 @@ public class RideService implements BasicCRUD<Ride> {
 
     @Override
     public void update(Ride ride) {
-        for (int i = 0; i < listRides.size(); i++) {
-            Ride existingRide = listRides.get(i);
-            if (existingRide.getId() == ride.getId()) {
-                listRides.set(i, ride);
-                break;
-            }
-        }
+        listRides.stream()
+                .filter(existingRide -> existingRide.getId() == ride.getId())
+                .findFirst()
+                .ifPresent(existingRide -> listRides.set(listRides.indexOf(existingRide), ride));
+        save();
     }
+
 
     @Override
     public boolean isExist(int rideId) {
@@ -232,18 +232,26 @@ public class RideService implements BasicCRUD<Ride> {
         }
     }
 
-    private static void printListRides(List<Ride> rides) {
+    public static void printListRides(List<Ride> rides) {
+        if (rides.size() == 0) {
+            System.out.println("There is no ride");
+            return;
+        }
 //        "| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-15s
         StringBuilder tableBuilder = new StringBuilder();
         tableBuilder.append("| ID   | Client Name         | Driver Name         | " +
                 "Pickup Location                                                             |" +
                 " Destination                                                                 | " +
-                "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)      |\n");
+                "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)       |\n");
         tableBuilder.append("|------|---------------------|---------------------|" +
                 "-----------------------------------------------------------------------------|" +
                 "-----------------------------------------------------------------------------|" +
                 "-----------------|-----------------|----------------------|-----------------|\n");
         for (Ride ride : rides) {
+            if (ride == null) {
+                System.out.println("There is no ride!");
+                return;
+            }
             tableBuilder.append(ride.toTableRow());
         }
         System.out.println(tableBuilder);
@@ -291,22 +299,19 @@ public class RideService implements BasicCRUD<Ride> {
         System.out.print("| ID   | Client Name         | Driver Name         | " +
                 "Pickup Location                                                             |" +
                 " Destination                                                                 | " +
-                "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)      |\n");
+                "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)       |\n");
         System.out.print("|------|---------------------|---------------------|" +
                 "-----------------------------------------------------------------------------|" +
                 "-----------------------------------------------------------------------------|" +
                 "-----------------|-----------------|----------------------|-----------------|\n");
+
         System.out.println(currentRide.toTableRow());
     }
 
-    public void approve(int rideId) {
+    public boolean approve(int rideId) {
         Ride ride = getById(rideId);
-        if (DriverService.currentDriver.isAvailable()) {
-            assignRideToDriver(ride, DriverService.currentDriver);
-            waitingRides = waitingRides.stream().filter(e -> e.getId() != rideId).toList();
-        } else {
-            DriverService.currentDriver.setDriverStatus(EDriverStatus.UNAVAILABLE);
-        }
+        assignRideToDriver(ride, DriverService.currentDriver);
+        return true;
     }
 
     public void assignRideToDriver(Ride ride, Driver driver) {
@@ -316,6 +321,9 @@ public class RideService implements BasicCRUD<Ride> {
         currentRide.setStatus(ERideStatus.CONFIRMED);
         currentRide.setDriver(driver);
         currentRide.setConfirmedTime(getDateTimeNow());
+        waitingRides = waitingRides.stream().filter(e -> e.getId() != ride.getId()).toList();
+        RideService.save();
+        DriverService.save();
     }
 
     public void finishRide(Location actualDestination, int actualWaitTime) {
@@ -327,11 +335,12 @@ public class RideService implements BasicCRUD<Ride> {
         currentRide.setFare(fare);
         currentRide.setEndTime(getDateTimeNow());
         currentRide.setStatus(ERideStatus.COMPLETED);
-        printActualRide(currentRide);
+        printListRides(Collections.singletonList(currentRide));
         update(currentRide);
         currentRide = null;
         DriverService.currentDriver.setCurrentRide(null);
         DriverService.currentDriver.setDriverStatus(EDriverStatus.AVAILABLE);
+        DriverService.save();
     }
 
     public static boolean printAvailableRides() {
@@ -344,7 +353,7 @@ public class RideService implements BasicCRUD<Ride> {
         return true;
     }
 
-    private static List<Ride> getAvailableRides() {
+    public static List<Ride> getAvailableRides() {
         if (waitingRides.size() == 0) {
             return new ArrayList<>();
         }
@@ -357,16 +366,17 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static void autoDeclineRide() {
-        if (waitingRides == null) {
+        if (getWaitingRides().size() == 0) {
             return;
         }
-        for (Ride ride : waitingRides) {
+        for (Ride ride : getWaitingRides()) {
             if (getDuration(ride.getExpectedPickupTime(), getDateTimeNow()) > 20) {
-                if (Objects.equals(currentRide, ride)) {
+                if (Objects.equals(currentRide.getId(), ride.getId())) {
                     currentRide = null;
                 }
                 ride.setStatus(ERideStatus.DECLINE);
-                waitingRides.remove(ride);
+                getWaitingRides().remove(ride);
+                save();
             }
         }
     }
@@ -376,9 +386,18 @@ public class RideService implements BasicCRUD<Ride> {
             System.out.println("There is no such ride");
             return;
         }
-        System.out.printf("| %-4d | %-19s | %-19s | %-75s | %-75s | %-15f | %-15d | %-20s | %-15s |",
+        System.out.print("| ID   | Client Name         | Driver Name         | " +
+                "Pickup Location                                                             |" +
+                " Destination                                                                 | " +
+                "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)       |\n");
+        System.out.print("|------|---------------------|---------------------|" +
+                "-----------------------------------------------------------------------------|" +
+                "-----------------------------------------------------------------------------|" +
+                "-----------------|-----------------|----------------------|-----------------|\n");
+        System.out.printf("| %-4d | %-19s | %-19s | %-19s | %-75s | %-75s | %-15f | %-15d | %-20s | %-15s |\n",
                 ride.getId(),
                 ride.getClient().getName(),
+                ride.getDriver().getName(),
                 ride.getPickupLocation().getAddress(),
                 ride.getExpectedDestination().getAddress(),
                 ride.getCarType().getSeat(),
@@ -393,9 +412,18 @@ public class RideService implements BasicCRUD<Ride> {
             System.out.println("There is no such ride");
             return;
         }
-        System.out.printf("| %-4d | %-19s | %-19s | %-75s | %-75s | %-15f | %-15d | %-20s | %-15s |",
+        System.out.print("| ID   | Client Name         | Driver Name         | " +
+                "Pickup Location                                                             |" +
+                " Destination                                                                 | " +
+                "Distance (km)   | Wait time (min) | Pickup time          |Fare (vnd)       |\n");
+        System.out.print("|------|---------------------|---------------------|" +
+                "-----------------------------------------------------------------------------|" +
+                "-----------------------------------------------------------------------------|" +
+                "-----------------|-----------------|----------------------|-----------------|\n");
+        System.out.printf("| %-4d | %-19s | %-19s | %-19s | %-75s | %-75s | %-15f | %-15d | %-20s | %-15s |\n",
                 ride.getId(),
                 ride.getClient().getName(),
+                ride.getDriver().getName(),
                 ride.getPickupLocation().getAddress(),
                 ride.getActualDestination().getAddress(),
                 ride.getCarType().getSeat(),

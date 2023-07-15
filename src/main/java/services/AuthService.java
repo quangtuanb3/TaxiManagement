@@ -5,14 +5,16 @@ import utils.AppUtils;
 
 import static views.Client.ClientView.clientMenu;
 import static views.Driver.DriverView.driverMenu;
+import static views.LoginView.loginMenu;
 import static views.Manager.MangerView.managerMenu;
 
 public class AuthService {
 
 
     public static void login() {
+        System.out.println("Login");
         String email = AppUtils.getString("Input username: ");
-        String password = AppUtils.getString("Input password");
+        String password = AppUtils.getString("Input password: ");
         if (ManagerService.getByEmail(email) != null && ManagerService.getByEmail(email).
                 getPassword().getPasscode().
                 equals(AppUtils.hashPassword(password,
@@ -37,7 +39,13 @@ public class AuthService {
 
         } else {
             System.out.println("Invalid account!");
-            login();
+            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back to main menu", 0, 1);
+            if (choice == 1) {
+                login();
+            } else {
+                loginMenu();
+            }
+
         }
 
     }

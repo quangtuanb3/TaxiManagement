@@ -4,11 +4,12 @@ import models.Location;
 import services.DriverService;
 import services.RideService;
 import utils.AppUtils;
+import utils.Constant;
 import utils.ListView;
 import utils.MapQuest;
 
-import static services.RideService.availableRides;
-import static services.RideService.printExpectedRide;
+import java.util.Collections;
+
 import static utils.AppUtils.getDateTimeNow;
 import static views.LoginView.loginMenu;
 
@@ -44,7 +45,7 @@ public class DriverView {
             case 5 -> {
 //                "5. Get ride detail"
                 System.out.println(ListView.driverMenuList.get(5));
-                printExpectedRide(DriverService.currentDriver.getCurrentRide());
+                RideService.printListRides(Collections.singletonList(RideService.currentRide));
             }
             case 6 -> {
 //                "6. Get ride history"
@@ -66,6 +67,7 @@ public class DriverView {
             driverMenu();
         } else {
             DriverService.currentDriver.getCurrentRide().setStartTime(getDateTimeNow());
+            System.out.printf("Welcome %s. Your trip starts at %s. Have a nice trip!\n", DriverService.currentDriver.getCurrentRide().getClient().getName(), getDateTimeNow().format(Constant.DATE_TIME_FORMATTER));
         }
 
     }
@@ -75,16 +77,13 @@ public class DriverView {
             System.out.println("There is no ride");
             driverMenu();
         } else {
-            Location actualDestination = new Location(MapQuest.getAddress("Input Actual destination: "));
-            int waitTime = AppUtils.getIntWithBound("Input time wait (minus): ", 0, 2000);
+            Location actualDestination = new Location(MapQuest.getAddress("Input actual destination: "));
+            int waitTime = AppUtils.getIntWithBound("Input actual time wait (minus): ", 0, 2000);
             RideService.getInstance().finishRide(actualDestination, waitTime);
         }
     }
 
     private static void ApproveRideUi() {
-        if (!RideService.printAvailableRides()) {
-            driverMenu();
-        }
         if (!DriverService.currentDriver.isAvailable()) {
             int choice;
             do {
@@ -93,9 +92,14 @@ public class DriverView {
                 if (choice == 0) driverMenu();
             } while (choice != 0);
         }
+        if (!RideService.printAvailableRides()) {
+            driverMenu();
+        }
         int rideId = AppUtils.getInt("Input ride id: ");
-        if (availableRides.stream().anyMatch(ride -> ride.getId() == rideId)) {
-            RideService.getInstance().approve(rideId);
+        if (RideService.getInstance().isInList(RideService.getAvailableRides(), rideId)) {
+            if (RideService.getInstance().approve(rideId)) {
+                System.out.println("Approve ride successfully!");
+            }
         } else {
             System.out.println("Ride not found. Please input again: ");
             ApproveRideUi();

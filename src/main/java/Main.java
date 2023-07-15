@@ -1,16 +1,16 @@
-import Data.Enum.ECarType;
-import Data.Enum.ERideStatus;
-import models.Location;
-import models.Ride;
-import services.DriverService;
-import services.RideService;
-import utils.AppUtils;
-
-import static services.ClientService.listClients;
+import static Data.Startup.init;
+import static views.LoginView.loginMenu;
 
 public class Main {
     public static void main(String[] args) {
+        try {
+            init();
+            loginMenu();
+        } catch (Exception e) {
+            System.out.println("An error has occurred. We apologize for any inconvenience caused.");
+            loginMenu();
+        }
+
 
     }
-
 }

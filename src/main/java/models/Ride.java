@@ -96,7 +96,7 @@ public class Ride implements Serializable {
                 (actualDestination == null) ? expectedDestination.getAddress() : actualDestination.getAddress(),
                 (actualDistance == null) ? expectedDistance : actualDistance,
                 (actualWaitTime == null) ? expectedWaitTime : actualWaitTime,
-                expectedPickupTime.format(DATE_TIME_FORMATTER),
+                (startTime == null ? expectedPickupTime.format(DATE_TIME_FORMATTER) : startTime.format(DATE_TIME_FORMATTER)),
                 (fare == 0D ? "CANCELLED" : AppUtils.convertPrice(fare)));
     }
 

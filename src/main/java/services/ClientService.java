@@ -62,10 +62,11 @@ public class ClientService implements BasicCRUD<Client> {
 
     @Override
     public boolean create(Client client) {
-        if (listClients.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))
-                || DriverService.listDrivers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))
-                || ManagerService.listManagers.stream().anyMatch(e -> e.getEmail().equals(client.getEmail()))
+        if (listClients.stream().anyMatch(e -> Objects.equals(e.getEmail(), client.getEmail()))
+                || DriverService.listDrivers.stream().anyMatch(e -> Objects.equals(e.getEmail(), client.getEmail()))
+                || ManagerService.listManagers.stream().anyMatch(e -> Objects.equals(e.getEmail(), client.getEmail()))
         ) {
+            System.out.println("Email has been used! Please try again.");
             return false;
         }
         client.setId(nextId);
