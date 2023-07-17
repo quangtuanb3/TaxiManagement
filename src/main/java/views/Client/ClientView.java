@@ -34,6 +34,7 @@ public class ClientView {
     }
 
     private static void updateUi() {
+        RideService.autoDeclineRide();
         ListView.printMenu(ListView.updateClientList);
         int choice = AppUtils.getIntWithBound("Input choice", 0, 3);
         switch (choice) {
@@ -66,6 +67,7 @@ public class ClientView {
     }
 
     private static void cancelRideUI() {
+        RideService.autoDeclineRide();
         if (ClientService.currentClient.getCurrentRide() == null) {
             System.out.println("There is no ride.");
             return;

@@ -58,6 +58,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static void printHistory() {
+        RideService.autoDeclineRide();
         List<Ride> history = listRides.stream().filter(e -> Objects.equals(e.getClient().getId(), ClientService.currentClient.getId())).toList();
         if (history.size() == 0) {
             System.out.println("There is no booked ride");
@@ -297,6 +298,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public void getRideDetail() {
+        RideService.autoDeclineRide();
         if (ClientService.currentClient.getCurrentRide() == null) {
             System.out.println("There is no ride");
             return;
@@ -363,6 +365,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static List<Ride> getAvailableRides() {
+        RideService.autoDeclineRide();
         if (getWaitingRides().size() == 0) {
             return new ArrayList<>();
         }
@@ -381,11 +384,14 @@ public class RideService implements BasicCRUD<Ride> {
         for (Ride ride : getWaitingRides()) {
             if (getDuration(ride.getExpectedPickupTime(), getDateTimeNow()) > 20) {
                 if (Objects.equals(ClientService.currentClient.getCurrentRide().getId(), ride.getId())) {
+
                     ClientService.currentClient.setCurrentRide(null);
                 }
                 ride.setStatus(ERideStatus.DECLINE);
+                ride.setFare(0D);
                 getWaitingRides().remove(ride);
-                save();
+                ClientService.save();
+                RideService.save();
             }
         }
     }

@@ -24,7 +24,6 @@ public class DriverView {
             case 1 -> {
 //                "1. Approve ride"
                 System.out.println(ListView.driverMenuList.get(1));
-                RideService.autoDeclineRide();
                 ApproveRideUi();
             }
             case 2 -> {
@@ -45,7 +44,7 @@ public class DriverView {
             case 5 -> {
 //                "5. Get ride detail"
                 System.out.println(ListView.driverMenuList.get(5));
-                RideService.printListRides(Collections.singletonList( DriverService.currentDriver.getCurrentRide()));
+                RideService.printListRides(Collections.singletonList(DriverService.currentDriver.getCurrentRide()));
             }
             case 6 -> {
 //                "6. Get ride history"
@@ -80,7 +79,7 @@ public class DriverView {
             driverMenu();
         } else {
             Location actualDestination = new Location(MapQuest.getAddress("Input actual destination: "));
-            int waitTime = AppUtils.getIntWithBound("Input actual time wait (minus): ", 0, 5*60);
+            int waitTime = AppUtils.getIntWithBound("Input actual time wait (minus): ", 0, 5 * 60);
             RideService.getInstance().finishRide(actualDestination, waitTime);
         }
     }

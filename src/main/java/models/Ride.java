@@ -91,7 +91,7 @@ public class Ride implements Serializable {
         return String.format("| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-20s | %-15s |\n",
                 id,
                 client.getName(),
-                (driver == null) ? "Waiting..." : driver.getName(),
+                (status.equals(ERideStatus.DECLINE)? "Declined" :  (driver == null) ? "Waiting..." : driver.getName()),
                 pickupLocation.getAddress(),
                 (actualDestination == null) ? expectedDestination.getAddress() : actualDestination.getAddress(),
                 (actualDistance == null) ? expectedDistance : actualDistance,

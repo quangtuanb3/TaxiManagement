@@ -42,7 +42,14 @@ public class MapQuest {
 
     public static Distance getDistance(String str1, String str2) {
         try {
-            String depart = AppUtils.getString(str1);
+            String depart;
+            do {
+                depart = AppUtils.getString(str1);
+                if (!depart.toLowerCase().contains("thừa thiên huế, việt nam")) {
+                    System.out.println("Please input depart in Thừa Thiên Huế, Việt Nam");
+                }
+            } while (!depart.toLowerCase().contains("thừa thiên huế, việt nam"));
+
             String arrive;
             do {
                 arrive = AppUtils.getString(str2);
@@ -53,6 +60,10 @@ public class MapQuest {
 
 
             Double distance = calculateDistance(depart, arrive);
+            if (distance == 0) {
+                System.out.println("Invalid location. Please input again!");
+                getDistance(str1, str2);
+            }
             return new Distance(depart, arrive, distance);
         } catch (Exception e) {
             System.out.println(e.getMessage());

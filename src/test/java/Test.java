@@ -14,12 +14,14 @@ import java.time.LocalDateTime;
 import static services.ClientService.listClients;
 
 public class Test {
+    public static void main(String[] args) {
+    }
 
     @org.junit.Test
     public void caseBookRide() {
         ClientService.currentClient = ClientService.listClients.get(0);
         RideService.autoDeclineRide();
-        if (RideService.currentRide != null) {
+        if (ClientService.currentClient.getCurrentRide()!= null) {
             System.out.println("You are already booked a ride. Please come back late");
             return;
         }

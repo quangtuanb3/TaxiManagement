@@ -1,7 +1,7 @@
 1.  ClientAccount = a
     Password = 1
 
-    depart = 28 Nguyễn Tri Phương, Phú Nhuận, Huế, Việt Nam
+    depart = 28 Nguyễn Tri Phương, Phú Nhuận, thừa thiên huế, Việt Nam
 
     arriver1 = Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam
 
@@ -10,7 +10,6 @@
     arriver3 = 12 Trần Quốc Toản, phường Tây Lộc, Huế, Thừa Thiên Huế, Việt Nam
 
     pickup time = 2023-07-10 10:10:00
-
 
 2.  DriverAcc: tythiwin@gmail.com
     Password: 1234
