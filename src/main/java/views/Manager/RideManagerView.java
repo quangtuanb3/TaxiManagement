@@ -77,7 +77,7 @@ public class RideManagerView {
             case 4 -> RideService.getInstance().print(ERideStatus.COMPLETED);
             case 5 -> RideService.getInstance().print(ERideStatus.DECLINE);
             case 6 -> RideService.getInstance().print(ERideStatus.CANCELLED);
-            case 0 -> rideManagerMenu();
+            case 0 -> filterRidesMenu();
         }
         filterRidesByStatusMenu();
     }
