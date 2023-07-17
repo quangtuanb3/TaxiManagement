@@ -7,9 +7,8 @@ public class Serializable {
     public static Object deserialize(String fileName) {
         Object obj = new ArrayList<>();
         try {
-            File file = new File(fileName);
-            if (!file.exists()) {
-                file.createNewFile();
+            if (!new File(fileName).exists()) {
+                return new ArrayList<>();
             }
             FileInputStream fis = new FileInputStream(fileName);
             var ois = new ObjectInputStream(fis);
@@ -23,12 +22,18 @@ public class Serializable {
 
     public static void serialize(Object obj, String fileName) {
         try {
-            FileOutputStream fos = new FileOutputStream(fileName);
-            ObjectOutputStream oos = new ObjectOutputStream(fos);
-            oos.writeObject(obj);
-            fos.close();
-        } catch (Exception e) {
+            File file = new File(fileName);
+            if (!file.exists()) {
+                file.createNewFile();
+            }
+            try (FileOutputStream fos = new FileOutputStream(file);
+                 ObjectOutputStream oos = new ObjectOutputStream(fos)) {
+                oos.writeObject(obj);
+            }
+        } catch (IOException e) {
             System.out.println("Errors File: " + e.getMessage());
+
+
         }
     }
 

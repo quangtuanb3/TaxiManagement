@@ -33,7 +33,7 @@ public class MapQuest {
             JSONObject json = (JSONObject) parser.parse(content);
 
             String result = ((JSONObject) json.get("route")).get("distance").toString();
-            return round(Double.parseDouble(result) * 1.6);
+            return round(Double.parseDouble(result) * 1.61);
 
         } catch (Exception e) {
             throw new RuntimeException("Invalid Location. Please try again");
@@ -43,7 +43,15 @@ public class MapQuest {
     public static Distance getDistance(String str1, String str2) {
         try {
             String depart = AppUtils.getString(str1);
-            String arrive = AppUtils.getString(str2);
+            String arrive;
+            do {
+                arrive = AppUtils.getString(str2);
+                if (Objects.equals(depart, arrive)) {
+                    System.out.println("Please input destination different from depart");
+                }
+            } while (Objects.equals(depart, arrive));
+
+
             Double distance = calculateDistance(depart, arrive);
             return new Distance(depart, arrive, distance);
         } catch (Exception e) {

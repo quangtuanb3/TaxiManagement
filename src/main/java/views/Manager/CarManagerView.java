@@ -1,28 +1,27 @@
 package views.Manager;
 
-import Data.Enum.EAccountStatus;
 import Data.Enum.ECarStatus;
 import Data.Enum.ECarType;
+import Data.Enum.EDriverStatus;
 import models.Car;
 import models.Driver;
 import services.CarService;
+import services.DriverService;
 import utils.AppUtils;
 import utils.ListView;
 
 import java.time.LocalDate;
 
-import static views.Manager.DriverManagerView.driverService;
 import static views.Manager.MangerView.managerMenu;
 
 public class CarManagerView {
-    static CarService carService = new CarService();
 
     public static void carMenu() {
         ListView.printMenu(ListView.carManagerMenuList);
         int choice;
         choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.carManagerMenuList.size() - 2);
         switch (choice) {
-            case 1 -> carService.printAll();
+            case 1 -> CarService.getInstance().printAll();
             case 2 -> addCarUI();
             case 3 -> removeCar();
             case 4 -> recallCarUI();
@@ -36,7 +35,7 @@ public class CarManagerView {
 
     private static void recallCarUI() {
         System.out.println("Recall Car Menu ");
-        carService.printAvailableCar();
+        CarService.getInstance().printAvailableCar();
         Car car = CarService.getInstance().getById("Input Car Id: ");
         System.out.printf("You are recalling car %s from Driver %s. \n", car.getLicensePlate(), car.getDriver().getName());
         int choice = AppUtils.getIntWithBound("Input 1 to continue or 0 to cancel", 0, 1);
@@ -55,10 +54,10 @@ public class CarManagerView {
     private static void updateCarUi() {
         try {
             System.out.println("Update Car's Information: ");
-            carService.printAvailableCar();
+            CarService.getInstance().printAvailableCar();
             int carId = AppUtils.getInt("Input Car's Id: ");
-            if (carService.isExist(carId)) {
-                Car car = carService.getById(carId);
+            if (CarService.getInstance().isExist(carId)) {
+                Car car = CarService.getInstance().getById(carId);
                 ListView.printMenu(ListView.updateCarMenuList);
                 int choice = AppUtils.getIntWithBound("Input choice: ", 0, ListView.updateCarMenuList.size() - 2);
                 switch (choice) {
@@ -81,7 +80,7 @@ public class CarManagerView {
 
                     case 0 -> carMenu();
                 }
-                carService.update(car);
+                CarService.getInstance().update(car);
             }
         } catch (Exception e) {
             throw new RuntimeException(e);
@@ -95,38 +94,47 @@ public class CarManagerView {
         LocalDate registrationExpiryDate = AppUtils.getDate("Input registration expiry date: ");
         LocalDate insuranceExpiryDate = AppUtils.getDate("Input insurance expiry date: ");
         Car car = new Car(model, licensePlate, carType, registrationExpiryDate, insuranceExpiryDate);
-        carService.create(car);
+        CarService.getInstance().create(car);
     }
 
     static void getCarDetail() {
         System.out.println("Get Car's detail");
         int carId = AppUtils.getInt("Input Car id: ");
-        if (!carService.isExist(carId)) {
+        if (!CarService.getInstance().isExist(carId)) {
             System.out.printf("Not found %d.\n", carId);
             getCarDetail();
         }
-        Car car = carService.getById(carId);
+        Car car = CarService.getInstance().getById(carId);
         System.out.println(car.toTableRow());
     }
 
     public static void assignCar() {
         System.out.println("Assign car menu");
-        carService.printAvailableCar();
-        Car car = carService.getById("Input car Id: ");
+        CarService.getInstance().printAvailableCar();
+        Car car = CarService.getInstance().getById("Input car Id: ");
+        if (!CarService.isInList(CarService.getAvailableCar(), car.getId())) {
+            System.out.println("Car not found");
+            int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to back preview menu", 1, 1);
+            if (choice == 0) {
+                carMenu();
+            } else {
+                assignCar();
+            }
+        }
         if (car.getDriver() != null) {
             System.out.printf("This car has been assigned to %s. Please recall car first \n", car.getDriver().getName());
             carMenu();
         }
-        driverService.print();
+        DriverService.getInstance().print();
         Driver driver;
         do {
-            driver = driverService.getById("Input driver Id: ");
-            if (driver.getAccountStatus() == EAccountStatus.BLOCKED || driver.getAccountStatus() == EAccountStatus.INACTIVE || !driver.isAvailable()) {
+            driver = DriverService.getInstance().getById("Input driver Id: ");
+            if (!driver.isAvailable() && !driver.getDriverStatus().equals(EDriverStatus.WAITING_ASSIGN)) {
                 System.out.println("This driver can be assigned car (Account is blocking/inactive or Driver is on trip)");
             }
-        } while (driver.getAccountStatus() == EAccountStatus.BLOCKED || driver.getAccountStatus() == EAccountStatus.INACTIVE || !driver.isAvailable());
+        } while ( !driver.isAvailable() && !driver.getDriverStatus().equals(EDriverStatus.WAITING_ASSIGN));
 
-        if (carService.assignCarToDriver(car, driver)) {
+        if (CarService.getInstance().assignCarToDriver(car, driver)) {
             System.out.println("Assign car successfully");
         } else {
             System.out.println("Assign car has been canceled");
@@ -135,10 +143,10 @@ public class CarManagerView {
     }
 
     static void removeCar() {
-        carService.printAvailableCar();
-        Car car = carService.getById("Input car id to remove:");
+        CarService.getInstance().printAvailableCar();
+        Car car = CarService.getInstance().getById("Input car id to remove:");
         car.setStatus(ECarStatus.USED);
-        carService.update(car);
+        CarService.getInstance().update(car);
         System.out.println("Remove car successfully!");
 
     }

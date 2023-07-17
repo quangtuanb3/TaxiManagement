@@ -13,7 +13,7 @@ public class AuthService {
 
     public static void login() {
         System.out.println("Login");
-        String email = AppUtils.getString("Input username: ");
+        String email = AppUtils.getString("Input email: ");
         String password = AppUtils.getString("Input password: ");
         if (ManagerService.getByEmail(email) != null && ManagerService.getByEmail(email).
                 getPassword().getPasscode().
@@ -21,6 +21,12 @@ public class AuthService {
                         ManagerService.getByEmail(email)
                                 .getPassword().getKey()))) {
             ManagerService.currentManager = ManagerService.getByEmail(email);
+            if (DriverService.currentDriver != null) {
+                DriverService.currentDriver = null;
+            }
+            if (ClientService.currentClient != null) {
+                ClientService.currentClient = null;
+            }
             managerMenu();
         } else if (DriverService.getByEmail(email) != null && DriverService.getByEmail(email).
                 getPassword().getPasscode().
@@ -28,6 +34,12 @@ public class AuthService {
                         DriverService.getByEmail(email)
                                 .getPassword().getKey()))) {
             DriverService.currentDriver = DriverService.getByEmail(email);
+            if (ClientService.currentClient != null) {
+                ClientService.currentClient = null;
+            }
+            if (ManagerService.currentManager != null) {
+                ManagerService.currentManager = null;
+            }
             driverMenu();
         } else if (ClientService.getByEmail(email) != null && ClientService.getByEmail(email).
                 getPassword().getPasscode().
@@ -35,6 +47,12 @@ public class AuthService {
                         ClientService.getByEmail(email)
                                 .getPassword().getKey()))) {
             ClientService.currentClient = ClientService.getByEmail(email);
+            if (ManagerService.currentManager != null) {
+                ManagerService.currentManager = null;
+            }
+            if (DriverService.currentDriver != null) {
+                DriverService.currentDriver = null;
+            }
             clientMenu();
 
         } else {

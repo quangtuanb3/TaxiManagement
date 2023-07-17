@@ -1,7 +1,7 @@
 1.  ClientAccount = a
     Password = 1
 
-    depart = 28 Nguyễn Tri Phương, Vĩnh Ninh, Huế, Việt Nam
+    depart = 28 Nguyễn Tri Phương, Phú Nhuận, Huế, Việt Nam
 
     arriver1 = Sân Bay Phú Bài, Hương Thủy, Thừa Thiên Huế, Việt Nam
 
@@ -14,11 +14,22 @@
 
 2.  DriverAcc: tythiwin@gmail.com
     Password: 1234
+    Location: 567 Lạc Long Quân, Thị Trấn Lăng Cô, Phú Lộc, Thừa Thiên Huế, Việt Nam
+    Car Type: 4 seats
+
+    Driver: duytham@gmail.com
+    password: 1234
+    Location: Huế
 
 3. Admin: tuan@gmail.com
    Password: 1234
 
 4. New acc: Duy Hơi Mạnh
    Email: duymanh@gmail.com
-   pass: 1234
-   phone: 097 666 8888
+   pass: duy12345
+   phone: 0976668888
+
+5. New acc: Tuấn Em
+   Email: tuanem@gmail.com
+   pass: tuanem000
+   phone: 0976669999

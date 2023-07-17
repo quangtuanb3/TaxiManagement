@@ -66,17 +66,15 @@ public class ClientView {
     }
 
     private static void cancelRideUI() {
-        if (RideService.currentRide == null) {
+        if (ClientService.currentClient.getCurrentRide() == null) {
             System.out.println("There is no ride.");
             return;
         }
 
-        System.out.println(RideService.currentRide.toTableRow());
+        System.out.println(ClientService.currentClient.getCurrentRide().toTableRow());
         if (RideService.checkBeforeCancel()) {
             int rideId = AppUtils.getInt("Please input Ride Id to cancel:");
-            if (RideService.getInstance().cancelRide(rideId)) {
-                System.out.println("Your ride has been cancelled!");
-            } else {
+            if (ClientService.currentClient.getCurrentRide().getId() != rideId) {
                 System.out.printf("Ride with ID %d not found.\n", rideId);
                 int choice = AppUtils.getIntWithBound("Press 1 to continue or 0 to go back to the previous menu", 0, 1);
                 if (choice == 1) {
@@ -84,7 +82,17 @@ public class ClientView {
                 } else {
                     clientMenu();
                 }
+            } else {
+
+                int choice = AppUtils.getIntWithBound("Are you sure ? Press 1 to cancel or 0 to back preview menu", 0, 1);
+                if (choice == 1) {
+                    RideService.getInstance().cancelRide(rideId);
+                    System.out.println("Your ride has been cancelled!");
+                } else {
+                    clientMenu();
+                }
             }
+
         } else {
             System.out.println("You just need to end this trip!");
             clientMenu();
@@ -93,13 +101,13 @@ public class ClientView {
 
     public static void bookRideUI() {
         RideService.autoDeclineRide();
-        if (RideService.currentRide != null) {
+        if (ClientService.currentClient.getCurrentRide() != null) {
             System.out.println("You are already booked a ride. Please come back late");
             return;
         }
         Distance distance = MapQuest.getDistance("Input depart: ", "Input destination: ");
         LocalDateTime pickupTime = AppUtils.getDateTime("Input pickup time");
-        int expectedWaitTime = AppUtils.getIntWithBound("Input expected wait time", 10, 1000);
+        int expectedWaitTime = AppUtils.getIntWithBound("Input expected wait time (min)", 0, 5*60);
         int carType = AppUtils.getIntWithBound("Input Car type (1.Four seats/2.Seven seats)", 1, 2);
         Ride ride = RideService.getInstance().bookRide(distance, carType == 1 ? ECarType.FOUR : ECarType.SEVEN, pickupTime, expectedWaitTime);
         System.out.println("Confirm your ride: ");

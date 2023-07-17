@@ -39,6 +39,7 @@ public class Car implements Serializable {
         this.carType = carType;
         this.insuranceExpiryDate = insuranceExpiryDate;
         this.registrationExpiryDate = registrationExpiryDate;
+        this.id = getNextId();
     }
     public String toTableRow() {
         return String.format("| %-3s | %-10s | %-13s | %-5s | %-10s | %-14s | %-14s | %-10s | %-20s | %-17s | %-14s | %-16s | %-11s |%n",
@@ -107,16 +108,15 @@ public class Car implements Serializable {
     }
 
     public static int getNextId() {
-        int max = 0;
         if (listCars != null) {
-            for (Car car : listCars) {
-                if (car.getId() > max) {
-                    max = car.getId();
-                }
-            }
+            return listCars.stream()
+                    .mapToInt(Car::getId)
+                    .max()
+                    .orElse(0) + 1;
         }
-        return max + 1;
+        return 1;
     }
+
 
     public void setCarType(ECarType carType) {
         this.carType = carType;

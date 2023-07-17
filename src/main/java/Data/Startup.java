@@ -41,6 +41,7 @@ public class Startup {
         CarService.listCars.get(6).setDriver(DriverService.listDrivers.get(6));
         CarService.listCars.get(7).setDriver(DriverService.listDrivers.get(7));
         CarService.save();
+        DriverService.save();
     }
 
     private static void initCars() {

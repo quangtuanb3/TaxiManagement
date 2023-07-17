@@ -15,7 +15,6 @@ import java.util.Objects;
 
 public class CarService implements BasicCRUD<Car> {
     public static List<Car> listCars;
-    private static int nextId;
     private static CarService instance;
 
     public static CarService getInstance() {
@@ -26,8 +25,7 @@ public class CarService implements BasicCRUD<Car> {
     }
 
     static {
-        listCars = new ArrayList<>((List<Car>) Serializable.deserialize(EPath.CARS.getFilePath()));
-        nextId = AppUtils.getNextId(listCars.stream().map(Car::getId).toList());
+        listCars = loadData();
     }
 
     public CarService() {
@@ -36,9 +34,11 @@ public class CarService implements BasicCRUD<Car> {
     public static boolean recall(Car car) {
         if (car.getDriver() != null) {
             car.getDriver().setDriverStatus(EDriverStatus.WAITING_ASSIGN);
+            car.getDriver().setCar(null);
+            DriverService.getInstance().update(car.getDriver());
             car.setDriver(null);
             car.setStatus(ECarStatus.WAITING_ASSIGN);
-            save();
+            CarService.getInstance().update(car);
             return true;
         }
         return false;
@@ -72,7 +72,6 @@ public class CarService implements BasicCRUD<Car> {
         if (listCars.stream().anyMatch(e -> e.getLicensePlate().equals(car.getLicensePlate()))) {
             return false;
         }
-        car.setId(CarService.nextId);
         listCars.add(car);
         save();
         return true;
@@ -90,6 +89,10 @@ public class CarService implements BasicCRUD<Car> {
                 });
     }
 
+    public static List<Car> loadData() {
+
+        return new ArrayList<>((List<Car>) Serializable.deserialize(EPath.CARS.getFilePath()));
+    }
 
     public static void save() {
         Serializable.serialize(listCars, EPath.CARS.getFilePath());
@@ -116,10 +119,14 @@ public class CarService implements BasicCRUD<Car> {
         StringBuilder tableBuilder = new StringBuilder();
         tableBuilder.append("| ID  | Model      | License Plate | Seats | Open Price | Price Under 30 | Price Upper 30 | Wait Price | Registration Expired | Insurance Expired | Driver ID      | Driver Name      | Car status  |\n");
         tableBuilder.append("|-----|------------|---------------|-------|------------|----------------|----------------|------------|----------------------|-------------------|----------------|------------------|-------------|\n");
-        for (Car car : listCars.stream().filter(e -> e.getStatus() != ECarStatus.USED).toList()) {
+        for (Car car : getAvailableCar()) {
             tableBuilder.append(car.toTableRow());
         }
         System.out.println(tableBuilder);
+    }
+
+    public static List<Car> getAvailableCar() {
+        return listCars.stream().filter(e -> e.getStatus() != ECarStatus.USED && e.getStatus() != ECarStatus.REPAIRING).toList();
     }
 
     public void printAll() {
@@ -164,6 +171,10 @@ public class CarService implements BasicCRUD<Car> {
 
         }
         return false;
+    }
+
+    public static boolean isInList(List<Car> list, int carId) {
+        return list.stream().anyMatch(e -> e.getId() == carId);
     }
 
 }

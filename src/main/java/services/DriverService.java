@@ -15,7 +15,6 @@ public class DriverService implements BasicCRUD<Driver> {
     public static List<Driver> listDrivers;
     public static Driver currentDriver;
     private static DriverService instance;
-    private static int nextId;
 
     public static DriverService getInstance() {
         if (instance == null) {
@@ -25,8 +24,7 @@ public class DriverService implements BasicCRUD<Driver> {
     }
 
     static {
-        listDrivers = new ArrayList<>((List<Driver>) Serializable.deserialize(EPath.DRIVERS.getFilePath()));
-        nextId = AppUtils.getNextId(listDrivers.stream().map(Driver::getId).toList());
+        listDrivers = loadData();
     }
 
     public DriverService() {
@@ -61,7 +59,6 @@ public class DriverService implements BasicCRUD<Driver> {
             System.out.println("Email has been use");
             return false;
         }
-        driver.setId(nextId);
         listDrivers.add(driver);
         save();
         return true;
@@ -108,9 +105,13 @@ public class DriverService implements BasicCRUD<Driver> {
 
 
     public void print() {
+        if (listDrivers.size() == 0) {
+            System.out.println("There is no Driver");
+        }
         StringBuilder tableBuilder = new StringBuilder();
         tableBuilder.append("| ID   | Name                 | Email                      | Car        | Salary        | Driver Status    | Account Status  |\n");
         tableBuilder.append("|------|----------------------|----------------------------|------------|---------------|------------------|-----------------|\n");
+
         for (Driver driver : listDrivers) {
             tableBuilder.append(driver.toTableRow());
         }
@@ -118,13 +119,26 @@ public class DriverService implements BasicCRUD<Driver> {
     }
 
     public static void printRideHistory() {
-        if (DriverService.currentDriver != null) {
-            for (Ride ride : RideService.listRides.stream().filter(e -> e.getDriver().equals(DriverService.currentDriver)).toList()) {
-                System.out.println(ride.toString());
-            }
-
+        if (DriverService.currentDriver == null) {
+            System.out.println("There is no ride");
+            return;
+        }
+        List<Ride> history = RideService.listRides.stream().filter(e -> Objects.equals(e.getDriver(), DriverService.currentDriver)).toList();
+        if (history.size() == 0) {
+            System.out.println("There is no ride");
+            return;
+        } else if (history.get(0) == null) {
+            System.out.println("There is no ride");
+            return;
+        }
+        for (Ride ride : history) {
+            System.out.println(ride.toTableRow());
         }
 
     }
 
+
+    public static List<Driver> loadData() {
+        return new ArrayList<>((List<Driver>) Serializable.deserialize(EPath.DRIVERS.getFilePath()));
+    }
 }

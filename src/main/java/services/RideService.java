@@ -28,7 +28,7 @@ public class RideService implements BasicCRUD<Ride> {
     public static List<Ride> waitingRides;
 
     static {
-        listRides = new ArrayList<>((List<Ride>) Serializable.deserialize(EPath.RIDES.getFilePath()));
+        listRides = loadData();
         waitingRides = new ArrayList<>(listRides.stream().filter(e -> e.getStatus().equals(ERideStatus.WAITING)).toList());
     }
 
@@ -44,7 +44,6 @@ public class RideService implements BasicCRUD<Ride> {
     public static List<Ride> availableRides;
     public static List<Driver> availableDriver;
 
-    public static Ride currentRide;
     public static FareCalculator fareCalculator = new FareCalculator();
 
     public RideService() {
@@ -55,10 +54,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static boolean checkBeforeCancel() {
-        if (currentRide.isWaitApprove()) {
-            return true;
-        }
-        return currentRide.isConfirmed();
+        return ClientService.currentClient.getCurrentRide().isWaitApprove();
     }
 
     public static void printHistory() {
@@ -92,7 +88,7 @@ public class RideService implements BasicCRUD<Ride> {
         Map<LocalDate, Integer> ridesPerDay = new HashMap<>();
         Map<LocalDate, Double> farePerDay = new HashMap<>();
 
-        for (Ride ride : listRides) {
+        for (Ride ride : getCompletedRide()) {
             LocalDate rideDate = ride.getEndTime().toLocalDate();
             if (rideDate.getMonthValue() == month && rideDate.getYear() == year) {
                 int ridesCount = ridesPerDay.getOrDefault(rideDate, 0);
@@ -107,15 +103,19 @@ public class RideService implements BasicCRUD<Ride> {
             LocalDate currentDate = LocalDate.of(year, month, day);
             int ridesCount = ridesPerDay.getOrDefault(currentDate, 0);
             double fareSum = farePerDay.getOrDefault(currentDate, 0.0);
-            System.out.printf("| %s | %-15d | %-14.2f |\n", currentDate.toString(), ridesCount, fareSum);
+            System.out.printf("| %s | %-15d | %-14s |\n", currentDate.toString(), ridesCount, AppUtils.convertPrice(fareSum));
         }
     }
 
+    private static List<Ride> getCompletedRide() {
+        if (listRides == null) return new ArrayList<>();
+        return listRides.stream().filter(e -> Objects.equals(e.getStatus(), ERideStatus.COMPLETED)).toList();
+    }
 
     public static void printRideMonthly(int year) {
         LocalDate startDate = LocalDate.of(year, 1, 1);
         LocalDate endDate = LocalDate.of(year, 12, 31);
-        List<Ride> rides = listRides.stream()
+        List<Ride> rides = getCompletedRide().stream()
                 .filter(e -> e.getEndTime().toLocalDate().isAfter(startDate) && e.getEndTime().toLocalDate().isBefore(endDate))
                 .toList();
 
@@ -133,13 +133,13 @@ public class RideService implements BasicCRUD<Ride> {
         for (Month month : Month.values()) {
             int ridesCount = ridesPerMonth.getOrDefault(month, 0);
             double fareSum = farePerMonth.getOrDefault(month, 0.0);
-            System.out.printf("| %-10s | %-15d | %-14.2f |\n", month.toString(), ridesCount, fareSum);
+            System.out.printf("| %-10s | %-15d | %-14s|\n", month.toString(), ridesCount, AppUtils.convertPrice(fareSum));
         }
     }
 
 
     public static Double calculateRevenue(Driver driver) {
-        List<Ride> rides = listRides.stream().filter(e -> Objects.equals(e.getDriver().getId(), driver.getId())).toList();
+        List<Ride> rides = getCompletedRide().stream().filter(e -> Objects.equals(e.getDriver().getId(), driver.getId())).toList();
         Double total = 0D;
         for (Ride r : rides) {
             if (r.getFare() != null) {
@@ -170,9 +170,9 @@ public class RideService implements BasicCRUD<Ride> {
     public Ride bookRide(Distance distance, ECarType eCarType, LocalDateTime expectedPickupTime, int expectedWaitTime) {
         try {
             Ride ride = new Ride(ClientService.currentClient, eCarType, distance, null, expectedPickupTime, expectedWaitTime);
-            Double fare = fareCalculator.firstCalculateFare(ride);
+            Double fare = fareCalculator.calculateFirstFare(ride);
             ride.setFare(fare);
-            currentRide = ride;
+            ClientService.currentClient.setCurrentRide(ride);
             if (getWaitingRides().size() == 0) {
                 waitingRides = new ArrayList<>();
                 waitingRides.add(ride);
@@ -187,6 +187,8 @@ public class RideService implements BasicCRUD<Ride> {
                     "-----------------------------------------------------------------------------|" +
                     "-----------------|-----------------|----------------------|-----------------|\n");
             System.out.println(ride.toTableRow());
+            ClientService.save();
+            save();
             return ride;
         } catch (Exception e) {
             System.out.println(e.getMessage());
@@ -236,6 +238,11 @@ public class RideService implements BasicCRUD<Ride> {
         if (rides.size() == 0) {
             System.out.println("There is no ride");
             return;
+        } else {
+            if (rides.get(0) == null) {
+                System.out.println("There is no ride");
+                return;
+            }
         }
 //        "| %-4s | %-19s | %-19s | %-75s | %-75s | %-15s | %-15s | %-15s
         StringBuilder tableBuilder = new StringBuilder();
@@ -248,10 +255,6 @@ public class RideService implements BasicCRUD<Ride> {
                 "-----------------------------------------------------------------------------|" +
                 "-----------------|-----------------|----------------------|-----------------|\n");
         for (Ride ride : rides) {
-            if (ride == null) {
-                System.out.println("There is no ride!");
-                return;
-            }
             tableBuilder.append(ride.toTableRow());
         }
         System.out.println(tableBuilder);
@@ -287,12 +290,14 @@ public class RideService implements BasicCRUD<Ride> {
     public boolean cancelRide(int rideId) {
         getById(rideId).setStatus(ERideStatus.CANCELLED);
         getById(rideId).setFare(0D);
-        RideService.currentRide = null;
+        ClientService.currentClient.setCurrentRide(null);
+        save();
+        ClientService.save();
         return true;
     }
 
     public void getRideDetail() {
-        if (currentRide == null) {
+        if (ClientService.currentClient.getCurrentRide() == null) {
             System.out.println("There is no ride");
             return;
         }
@@ -305,7 +310,7 @@ public class RideService implements BasicCRUD<Ride> {
                 "-----------------------------------------------------------------------------|" +
                 "-----------------|-----------------|----------------------|-----------------|\n");
 
-        System.out.println(currentRide.toTableRow());
+        System.out.println(ClientService.currentClient.getCurrentRide().toTableRow());
     }
 
     public boolean approve(int rideId) {
@@ -314,33 +319,37 @@ public class RideService implements BasicCRUD<Ride> {
         return true;
     }
 
-    public void assignRideToDriver(Ride ride, Driver driver) {
-        currentRide = ride;
-        driver.setCurrentRide(ride);
+    public void assignRideToDriver(Ride clientRide, Driver driver) {
+        driver.setCurrentRide(clientRide);
         driver.setDriverStatus(EDriverStatus.ON_TRIP);
-        currentRide.setStatus(ERideStatus.CONFIRMED);
-        currentRide.setDriver(driver);
-        currentRide.setConfirmedTime(getDateTimeNow());
-        waitingRides = waitingRides.stream().filter(e -> e.getId() != ride.getId()).toList();
+        driver.getCurrentRide().setStatus(ERideStatus.CONFIRMED);
+        clientRide.setDriver(driver);
+        clientRide.setConfirmedTime(getDateTimeNow());
+        Objects.requireNonNull(ClientService.getClientByRideId(clientRide.getId())).setCurrentRide(clientRide);
+        waitingRides = waitingRides.stream().filter(e -> e.getId() != clientRide.getId()).toList();
         RideService.save();
         DriverService.save();
+        ClientService.save();
     }
 
     public void finishRide(Location actualDestination, int actualWaitTime) {
-        currentRide.setActualDestination(actualDestination);
-        Double actualDistance = MapQuest.calculateDistance(currentRide.getPickupLocation().getAddress(), actualDestination.getAddress());
-        currentRide.setActualDistance(actualDistance);
-        currentRide.setActualWaitTime(actualWaitTime);
-        double fare = fareCalculator.lastCalculateFare(currentRide);
-        currentRide.setFare(fare);
-        currentRide.setEndTime(getDateTimeNow());
-        currentRide.setStatus(ERideStatus.COMPLETED);
-        printListRides(Collections.singletonList(currentRide));
-        update(currentRide);
-        currentRide = null;
+        DriverService.currentDriver.getCurrentRide().setActualDestination(actualDestination);
+        Double actualDistance = MapQuest.calculateDistance(DriverService.currentDriver.getCurrentRide()
+                .getPickupLocation().getAddress(), actualDestination.getAddress());
+        DriverService.currentDriver.getCurrentRide().setActualDistance(actualDistance);
+        DriverService.currentDriver.getCurrentRide().setActualWaitTime(actualWaitTime);
+        double fare = fareCalculator.calculateLastFare(DriverService.currentDriver.getCurrentRide());
+        DriverService.currentDriver.getCurrentRide().setFare(fare);
+        DriverService.currentDriver.getCurrentRide().setEndTime(getDateTimeNow());
+        DriverService.currentDriver.getCurrentRide().setStatus(ERideStatus.COMPLETED);
+        update(DriverService.currentDriver.getCurrentRide());
+        printListRides(Collections.singletonList(DriverService.currentDriver.getCurrentRide()));
+        Objects.requireNonNull(ClientService.getClientByRideId(DriverService.currentDriver.getCurrentRide().getId())).setCurrentRide(null);
         DriverService.currentDriver.setCurrentRide(null);
         DriverService.currentDriver.setDriverStatus(EDriverStatus.AVAILABLE);
         DriverService.save();
+        ClientService.save();
+        RideService.save();
     }
 
     public static boolean printAvailableRides() {
@@ -354,10 +363,10 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static List<Ride> getAvailableRides() {
-        if (waitingRides.size() == 0) {
+        if (getWaitingRides().size() == 0) {
             return new ArrayList<>();
         }
-        return waitingRides.stream()
+        return getWaitingRides().stream()
                 .filter(e -> getDuration(getDateTimeNow(), e.getExpectedPickupTime()) < 120)
                 .filter(e -> e.getCarType().equals(DriverService.currentDriver.getCar().getCarType()))
                 .filter(e -> MapQuest.calculateDistance(e.getPickupLocation().getAddress(),
@@ -371,8 +380,8 @@ public class RideService implements BasicCRUD<Ride> {
         }
         for (Ride ride : getWaitingRides()) {
             if (getDuration(ride.getExpectedPickupTime(), getDateTimeNow()) > 20) {
-                if (Objects.equals(currentRide.getId(), ride.getId())) {
-                    currentRide = null;
+                if (Objects.equals(ClientService.currentClient.getCurrentRide().getId(), ride.getId())) {
+                    ClientService.currentClient.setCurrentRide(null);
                 }
                 ride.setStatus(ERideStatus.DECLINE);
                 getWaitingRides().remove(ride);
@@ -438,7 +447,7 @@ public class RideService implements BasicCRUD<Ride> {
     }
 
     public static void printRidesFromTo(LocalDate start, LocalDate end) {
-        List<Ride> ridesInRange = listRides.stream()
+        List<Ride> ridesInRange = getCompletedRide().stream()
                 .filter(ride -> ride.getStartTime().toLocalDate().isAfter(start.minusDays(1))
                         && ride.getEndTime().toLocalDate().isBefore(end.plusDays(1)))
                 .toList();
@@ -450,4 +459,7 @@ public class RideService implements BasicCRUD<Ride> {
         }
     }
 
+    public static List<Ride> loadData() {
+        return new ArrayList<>((List<Ride>) Serializable.deserialize(EPath.RIDES.getFilePath()));
+    }
 }

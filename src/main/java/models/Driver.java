@@ -11,7 +11,6 @@ import static services.DriverService.listDrivers;
 
 
 public class Driver extends Person implements Serializable {
-
     private Ride currentRide;
     private Car car;
     private EDriverStatus driverStatus = EDriverStatus.AVAILABLE;
@@ -101,7 +100,6 @@ public class Driver extends Person implements Serializable {
         this.accountStatus = accountStatus;
     }
 
-
     public String toTableRow() {
         return String.format("| %-4s | %-20s | %-26s | %-10s | %-13s | %-16s | %-15s |%n",
                 getId(),
@@ -114,14 +112,13 @@ public class Driver extends Person implements Serializable {
     }
 
     public static int getNextId() {
-        int max = 0;
         if (listDrivers != null) {
-            for (Driver driver : listDrivers) {
-                if (driver.getId() > max) {
-                    max = driver.getId();
-                }
-            }
+            return listDrivers.stream()
+                    .mapToInt(Driver::getId)
+                    .max()
+                    .orElse(0) + 1;
         }
-        return max + 1;
+        return 1;
     }
+
 }

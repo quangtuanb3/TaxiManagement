@@ -2,6 +2,7 @@ package services;
 
 import Data.Enum.EPath;
 import models.Client;
+import models.Ride;
 import utils.AppUtils;
 import utils.Serializable;
 
@@ -12,7 +13,7 @@ import java.util.Objects;
 public class ClientService implements BasicCRUD<Client> {
     public static List<Client> listClients;
     private static ClientService instance;
-    private static int nextId;
+
 
     public static ClientService getInstance() {
         if (instance == null) {
@@ -24,8 +25,8 @@ public class ClientService implements BasicCRUD<Client> {
     public static Client currentClient;
 
     static {
-        listClients = new ArrayList<>((List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath()));
-        nextId = AppUtils.getNextId(listClients.stream().map(Client::getId).toList());
+        listClients = loadData();
+
     }
 
     public ClientService() {
@@ -69,7 +70,6 @@ public class ClientService implements BasicCRUD<Client> {
             System.out.println("Email has been used! Please try again.");
             return false;
         }
-        client.setId(nextId);
         listClients.add(client);
         save();
         return true;
@@ -102,6 +102,9 @@ public class ClientService implements BasicCRUD<Client> {
                 .toList();
     }
 
+    public static List<Client> loadData() {
+        return new ArrayList<>((List<Client>) Serializable.deserialize(EPath.CLIENTS.getFilePath()));
+    }
 
     public void print() {
 
@@ -117,5 +120,17 @@ public class ClientService implements BasicCRUD<Client> {
 
     public static void save() {
         Serializable.serialize(listClients, EPath.CLIENTS.getFilePath());
+    }
+
+    public static Client getClientByRideId(int rideID) {
+        if (RideService.listRides.size() == 0 || listClients.size() == 0) {
+            System.out.println("Not found!");
+            return null;
+        }
+        Ride ride = RideService.listRides.stream().filter(e -> Objects.equals(e.getId(), rideID)).findFirst().orElse(null);
+        if (ride != null) {
+            return ride.getClient();
+        }
+        return null;
     }
 }

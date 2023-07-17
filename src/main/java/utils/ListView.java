@@ -69,7 +69,7 @@ public class ListView {
             "1. List Drivers",
             "2. Add new Driver",
             "3. Remove Driver",
-            "5. Update Driver's Information",
+            "4. Update Driver's Information",
             "0. Back to main menu"
     );
     public static List<String> rideManagerMenuList = Arrays.asList(

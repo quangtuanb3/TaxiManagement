@@ -1,5 +1,6 @@
 package services;
 
+import Data.Enum.ECarType;
 import models.Ride;
 
 public class FareCalculator {
@@ -16,27 +17,30 @@ public class FareCalculator {
         return instance;
     }
 
-    public Double firstCalculateFare(Ride ride) {
-        if (ride.getExpectedDistance() <= 30) {
-            return ride.getExpectedDistance() * ride.getCarType().getPriceUnder30()
-                    + ride.getCarType().getOpenPrice() + (ride.getExpectedWaitTime() > 20 ? ride.getExpectedWaitTime() / 60 : 0)
-                    * ride.getCarType().getWaitPrice();
+    public double calculateFirstFare(Ride ride) {
+        double distance = ride.getExpectedDistance();
+        double waitTime = ride.getExpectedWaitTime();
+        return calculateBaseFare(ride.getCarType(), distance, waitTime);
+    }
+
+    public double calculateLastFare(Ride ride) {
+        double distance = ride.getActualDistance();
+        double waitTime = ride.getActualWaitTime();
+        return calculateBaseFare(ride.getCarType(), distance, waitTime);
+
+    }
+
+    public double calculateBaseFare(ECarType eCarType, double distance, double waitTime) {
+        if (distance <= 30) {
+            return distance * eCarType.getPriceUnder30()
+                    + eCarType.getOpenPrice()
+                    + (waitTime > 20 ? waitTime / 60 : 0) * eCarType.getWaitPrice();
         } else {
-            return (ride.getExpectedDistance() - 30) * ride.getCarType().getPriceUpper30()
-                    + 30 * ride.getCarType().getPriceUnder30() + ride.getCarType().getOpenPrice()
-                    + (ride.getExpectedWaitTime() > 20 ? ride.getExpectedWaitTime() / 60 : 0) * ride.getCarType().getWaitPrice();
+            return (distance - 30) * eCarType.getPriceUpper30()
+                    + 30 * eCarType.getPriceUnder30()
+                    + eCarType.getOpenPrice()
+                    + (waitTime > 20 ? waitTime / 60 : 0) * eCarType.getWaitPrice();
         }
     }
 
-    public Double lastCalculateFare(Ride ride) {
-        if (ride.getActualDistance() <= 30) {
-            return ride.getActualDistance() * ride.getCarType().getPriceUnder30()
-                    + ride.getCarType().getOpenPrice() + (ride.getExpectedWaitTime() > 20 ? ride.getExpectedWaitTime() / 60 : 0)
-                    * ride.getCarType().getWaitPrice();
-        } else {
-            return (ride.getActualDistance() - 30) * ride.getCarType().getPriceUpper30()
-                    + 30 * ride.getCarType().getPriceUnder30() + ride.getCarType().getOpenPrice()
-                    + (ride.getExpectedWaitTime() > 20 ? ride.getExpectedWaitTime() / 60 : 0) * ride.getCarType().getWaitPrice();
-        }
-    }
 }

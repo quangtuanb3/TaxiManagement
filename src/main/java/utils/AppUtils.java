@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
 import java.util.Base64;
-import java.util.List;
 import java.util.Locale;
 import java.util.Scanner;
 import java.util.regex.Pattern;
@@ -151,10 +150,6 @@ public class AppUtils {
     public static int getDuration(LocalDateTime startTime, LocalDateTime endTime) {
         Duration duration = Duration.between(startTime, endTime);
         return (int) duration.toMinutes();
-    }
-
-    public static int getNextId(List<Integer> integerList) {
-        return integerList.stream().max(Integer::compareTo).orElse(0) + 1;
     }
 
     public static String convertPrice(double price) {

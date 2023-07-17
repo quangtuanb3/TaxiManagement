@@ -45,7 +45,7 @@ public class DriverView {
             case 5 -> {
 //                "5. Get ride detail"
                 System.out.println(ListView.driverMenuList.get(5));
-                RideService.printListRides(Collections.singletonList(RideService.currentRide));
+                RideService.printListRides(Collections.singletonList( DriverService.currentDriver.getCurrentRide()));
             }
             case 6 -> {
 //                "6. Get ride history"
@@ -67,7 +67,9 @@ public class DriverView {
             driverMenu();
         } else {
             DriverService.currentDriver.getCurrentRide().setStartTime(getDateTimeNow());
-            System.out.printf("Welcome %s. Your trip starts at %s. Have a nice trip!\n", DriverService.currentDriver.getCurrentRide().getClient().getName(), getDateTimeNow().format(Constant.DATE_TIME_FORMATTER));
+            System.out.printf("Welcome %s. Your trip starts at %s. Have a nice trip!\n",
+                    DriverService.currentDriver.getCurrentRide().getClient().getName(),
+                    getDateTimeNow().format(Constant.DATE_TIME_FORMATTER));
         }
 
     }
@@ -78,7 +80,7 @@ public class DriverView {
             driverMenu();
         } else {
             Location actualDestination = new Location(MapQuest.getAddress("Input actual destination: "));
-            int waitTime = AppUtils.getIntWithBound("Input actual time wait (minus): ", 0, 2000);
+            int waitTime = AppUtils.getIntWithBound("Input actual time wait (minus): ", 0, 5*60);
             RideService.getInstance().finishRide(actualDestination, waitTime);
         }
     }

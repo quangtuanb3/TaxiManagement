@@ -3,7 +3,7 @@ package Data.Enum;
 public enum ECarStatus {
     WAITING_ASSIGN("Not assign"),
     USING("using"),
-    REPAIRING("unavailable"),
+    REPAIRING("repairing"),
     USED("used");
     private final String status;
 
